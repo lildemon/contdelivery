@@ -1,0 +1,23 @@
+{
+  "name": "ContDelivery",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ronhng",
+  "license": "ISC",
+  "dependencies": {
+    "exports-loader": "^0.6.2",
+    "extend": "^2.0.0",
+    "hogan.js": "^3.0.2",
+    "html-escape": "^1.0.1",
+    "loader-utils": "^0.2.5",
+    "mustache-loader": "^0.2.0",
+    "nedb": "^1.0.1",
+    "webpack": "^1.4.13",
+    "webpack-dev-server": "^1.6.6"
+  },
+  "node-remote": "www.tmued.com"
+}
