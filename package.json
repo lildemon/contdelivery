@@ -11,9 +11,11 @@
   "dependencies": {
     "exports-loader": "^0.6.2",
     "extend": "^2.0.0",
+    "grunt-init": "^0.3.2",
     "hogan.js": "^3.0.2",
     "html-escape": "^1.0.1",
     "loader-utils": "^0.2.5",
+    "lodash": "^2.4.1",
     "mustache-loader": "^0.2.0",
     "nedb": "^1.0.1",
     "webpack": "^1.4.13",
