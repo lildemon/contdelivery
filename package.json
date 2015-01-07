@@ -2,13 +2,17 @@
   "name": "ContDelivery",
   "version": "1.0.0",
   "description": "",
-  "main": "index.html",
+  "main": "./test/reactProject.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "ronhng",
   "license": "ISC",
   "dependencies": {
+    "coffee-jsx-loader": "^0.1.0",
+    "coffee-loader": "^0.7.2",
+    "coffee-react": "^2.1.2",
+    "coffee-script": "^1.8.0",
     "exports-loader": "^0.6.2",
     "extend": "^2.0.0",
     "grunt-init": "^0.3.2",
@@ -18,6 +22,7 @@
     "lodash": "^2.4.1",
     "mustache-loader": "^0.2.0",
     "nedb": "^1.0.1",
+    "socket.io": "^1.2.1",
     "webpack": "^1.4.13",
     "webpack-dev-server": "^1.6.6"
   },

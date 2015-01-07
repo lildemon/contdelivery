@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<input type="file" id="projpath" nwdirectory />
+	<button onclick="initbtn()">确定</button>
+	<script>
+
+		// build an express and initialize socket.io
+		// TODO: how to make socket.io emit to certian domain-specific client
+
+		var express = require('express')
+		var Project = require('../lib/Project')
+		var socketio = require("socket.io")
+
+		function initbtn() {
+			var path = document.getElementById('projpath').value
+			if(path) {
+				var p = new Project(path)
+				var app = express()
+				app.use(p.getMiddleware())
+				var httpServer = app.listen(8223)
+				var io = socketio.listen(httpServer, {
+					"log level": 1
+				})
+				io.sockets.on("connection", function(socket) {
+					socket.emit("ok")
+				})
+				
+			}
+		}
+	</script>
+</body>
+</html>
