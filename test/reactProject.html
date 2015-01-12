@@ -7,6 +7,7 @@
 <body>
 	<input type="file" id="projpath" nwdirectory />
 	<button onclick="initbtn()">确定</button>
+	<button onclick="pack()">打包</button>
 	<script>
 
 		// build an express and initialize socket.io
@@ -15,11 +16,12 @@
 		var express = require('express')
 		var Project = require('../lib/Project')
 		var socketio = require("socket.io")
-
+		var path = require('path'),
+			child_process = require('child_process')
 		function initbtn() {
-			var path = document.getElementById('projpath').value
-			if(path) {
-				var p = new Project(path)
+			projPath = document.getElementById('projpath').value
+			if(projPath) {
+				var p = new Project(projPath)
 				var app = express()
 				app.use(p.getMiddleware())
 				var httpServer = app.listen(8223)
@@ -29,9 +31,59 @@
 				io.sockets.on("connection", function(socket) {
 					socket.emit("ok")
 				})
+				require('../lib/Watcher').sockets = io.sockets
 				
 			}
 		}
+
+		function pack() {
+			if(projPath) {
+				var confis = path.join(path.dirname(process.execPath), 'ContFis')
+				var node = path.join(confis, 'node.exe')
+
+
+				/*child_process.execFile(node, [
+					'index.js',
+					'--root', path.join(projPath, 'wwwroot'), // use Project.wwwroot
+					'--dest', path.join(projPath, 'output')
+				], {
+					cwd: confis
+				}, function(err, stdout, stderr) {
+					if(err) {
+						console.log('ERROR: ')
+					}
+					console.log(stdout)
+				})*/
+
+				var job = child_process.spawn(node, [
+					'index.js',
+					'--root', path.join(projPath, 'wwwroot'), // use Project.wwwroot
+					'--dest', path.join(projPath, 'output')
+				], {
+					cwd: confis
+				})
+
+				var out = '', err = ''
+				job.stdout.on('data', function(data) {
+					out += data
+				})
+
+				job.stderr.on('data', function(data) {
+					err += data
+				})
+
+				job.on('close', function(code) {
+					if(code != 0) {
+						console.log('ERROR: \n' + err)
+					} else {
+						alert('打包完成')
+					}
+					//console.log(out)
+				})
+			}
+		}
+
+		// TODO: preview output folder
 	</script>
 </body>
 </html>

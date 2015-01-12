@@ -1,0 +1,20 @@
+{
+  "name": "ContFis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "fis": "^1.8.13",
+    "fis-parser-coffee-script": "0.0.2",
+    "fis-parser-marked": "0.0.5",
+    "fis-parser-sass": "^0.2.3",
+    "fis-postpackager-simple": "0.0.23",
+    "minimist": "^1.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
