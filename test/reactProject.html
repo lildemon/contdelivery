@@ -16,6 +16,7 @@
 		var express = require('express')
 		var Project = require('../lib/Project')
 		var socketio = require("socket.io")
+		var projectMatcher = require('../lib/projectMatcher')
 		var path = require('path'),
 			child_process = require('child_process')
 		function initbtn() {
@@ -23,7 +24,9 @@
 			if(projPath) {
 				var p = new Project(projPath)
 				var app = express()
-				app.use(p.getMiddleware())
+				app.use(projectMatcher)
+				projectMatcher.installedProject.push(p)
+				//app.use(p.getMiddleware())
 				var httpServer = app.listen(8223)
 				var io = socketio.listen(httpServer, {
 					"log level": 1

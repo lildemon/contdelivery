@@ -2,7 +2,7 @@
   "name": "ContDelivery",
   "version": "1.0.0",
   "description": "",
-  "main": "./test/reactProject.html",
+  "main": "./guiLib/main.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
