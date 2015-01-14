@@ -35,7 +35,9 @@
 
 	<script type="text/template" id="loadedItem">
 		<li data-path="<%=path%>">
-			<span><%=path%></span> &nbsp;<button data-id="<%=id%>" class="config">配置</button> &nbsp;&nbsp; <button data-id="<%=id%>" class="open">打开</button> &nbsp;&nbsp; <button data-path="<%=path%>" class="pack">打包</button> &nbsp;&nbsp; <button data-path="<%=path%>" class="dir">打开目录</button> &nbsp;&nbsp; <button data-id="<%=id%>" data-path="<%=path%>" class="unload">卸载</button>
+			<div><span><%=path%></span> &nbsp;<button data-id="<%=id%>" class="config">配置</button> &nbsp;&nbsp; <button data-id="<%=id%>" class="open">打开</button> &nbsp;&nbsp; <button data-id="<%=id%>" data-path="<%=path%>" class="pack">打包</button> &nbsp;&nbsp; <button data-path="<%=path%>" class="dir">打开目录</button> &nbsp;&nbsp; <button data-id="<%=id%>" data-path="<%=path%>" class="unload">卸载</button>
+				</div>
+			<div class="msg" style="color: #F00"></div>
 		</li>
 	</script>
 
@@ -85,36 +87,45 @@
 			updateLoadedProjects()
 		})
 		.on('click', '.pack', function() {
+			var project = projectLib.getProjectById($(this).data('id'))
+			
+
 			var projPath = $(this).data('path')
 			var confis = path.join(path.dirname(process.execPath), 'ContFis')
 			var node = path.join(confis, 'node.exe')
+			var $this = $(this)
 
-			var job = child_process.spawn(node, [
-				'index.js',
-				'--root', path.join(projPath, 'wwwroot'), // use Project.wwwroot
-				'--dest', path.join(projPath, 'output')
-			], {
-				cwd: confis
+			project.compileWebpack(function() {
+				var job = child_process.spawn(node, [
+					'index.js',
+					'--root', path.join(projPath, 'wwwroot'), // use Project.wwwroot
+					'--dest', path.join(projPath, 'output')
+				], {
+					cwd: confis
+				})
+
+				var out = '', err = ''
+				job.stdout.on('data', function(data) {
+					out += data
+				})
+
+				job.stderr.on('data', function(data) {
+					err += data
+				})
+
+				job.on('close', function(code) {
+					if(code != 0) {
+						console.log('ERROR: \n' + err)
+						alert('打包时发生错误： \n' + err + '\n\n')
+						$this.closest('li').find('.msg').text(err)
+					} else {
+						alert('打包完成')
+					}
+					//console.log(out)
+				})
 			})
 
-			var out = '', err = ''
-			job.stdout.on('data', function(data) {
-				out += data
-			})
-
-			job.stderr.on('data', function(data) {
-				err += data
-			})
-
-			job.on('close', function(code) {
-				if(code != 0) {
-					console.log('ERROR: \n' + err)
-					alert('打包时发生错误： \n' + err + '\n\n')
-				} else {
-					alert('打包完成')
-				}
-				//console.log(out)
-			})
+			
 		})
 
 		function loadProject(projPath) {

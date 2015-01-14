@@ -27,6 +27,25 @@
 		  </thead>
 		  <tbody>
 		  	<tr>
+		  		<td>Pack目录名</td>
+		  		<td>
+		  			<form class="form-horizontal" id="packNameConfig">
+		  				<div class="form-group">
+						    <div class="col-md-10 form-inline">
+						      <div class="input-group">
+						      	<input class="form-control" type="text" value="packed" placeholder="Entry Name" name="packDirName">
+						      </div>
+							    <p class="text-right">
+									<button type="button" class="btn btn-success savePackDirBtn">保存</button>
+								</p>
+						    </div>
+					  	</div>
+		  			</form>
+		  			
+		  		</td>
+		  	</tr>
+
+		  	<tr>
 		  		<td>Entry</td>
 		  		<td>
 		  			
@@ -41,44 +60,14 @@
 							      	<input class="form-control tags" type="text" value="<%=entrystr%>" placeholder="Contains File.." name="entryFiles">
 							      </div>
 							      	<p>
-							      		As Common：<input type="checkbox">
+							      		As Common：<input class="commonCheck" type="checkbox" <%=isCommon ? 'checked' : ''%>>
 							      	</p>
 							    </div>
 
 						  	</div>
 						</script>
 		  				<div class="rows">
-		  				<!-- 
-		  					<div class="form-group">
-		  										    <label class="col-md-2 control-label"><button type="button" class="btn btn-danger btn-xs">X</button>&nbsp; Entry:</label>
-		  										    <div class="col-md-10 form-inline">
-		  										      <div class="input-group">
-		  										      	<input class="form-control" type="text" value="" placeholder="Entry Name">
-		  										      	<input class="form-control" type="text" value="" placeholder="Contains File..">
-		  										      </div>
-		  										    </div>
-		  										  </div>
-		  										  <div class="form-group">
-		  										    <label class="col-md-2 control-label"><button type="button" class="btn btn-danger btn-xs">X</button>&nbsp; Entry:</label>
-		  										    <div class="col-md-10 form-inline">
-		  										      <div class="input-group">
-		  										      	<input class="form-control" type="text" value="" placeholder="Entry Name">
-		  										      	<input class="form-control" type="text" value="" placeholder="Contains File..">
-		  										      </div>
-		  										    </div>
-		  										  </div>
-		  										  <div class="form-group">
-		  										    <label class="col-md-2 control-label"><button type="button" class="btn btn-danger btn-xs">X</button>&nbsp; Entry:</label>
-		  										    <div class="col-md-10 form-inline">
-		  										      	<input class="form-control" type="text" value="" placeholder="Entry Name">
-		  										      	<input class="form-control" type="text" value="" placeholder="Contains File.." data-role="tagsinput">
-		  										      	<p>
-		  										      		As Common：<input type="checkbox">
-		  										      	</p>
-		  										    </div>
-		  										    
-		  										  </div>
-		  				 -->
+		  				
 		  				</div>
 					  
 					  
@@ -92,8 +81,27 @@
 		  	</tr>
 
 		  	<tr>
+		  		<td>Alias配置</td>
+		  		<td>
+		  			<div class="form-group">
+					    <label class="col-md-2 control-label"><button type="button" class="btn btn-danger btn-xs removeAliasBtn">X</button>&nbsp; Alias:</label>
+					    <div class="col-md-10 form-inline">
+					      <div class="input-group">
+					      	<input class="form-control" type="text" value="<%=name%>" placeholder="Entry Name" name="aliasName">
+					      	<input class="form-control tags" type="text" value="<%=entrystr%>" placeholder="Contains File.." name="aliasVal">
+					      </div>
+					    </div>
+
+				  	</div>
+		  		</td>
+		  	</tr>
+
+		  	<tr>
+		  		<td>自定义Loader</td>
 		  		<td></td>
 		  	</tr>
+
+		  	
 		  </tbody>
 		</table>
 
@@ -114,7 +122,7 @@
 		  </thead>
 		  <tbody>
 		  	<tr>
-		  		<td>Entry</td>
+		  		<td>Domain</td>
 		  		<td>
 		  			
 		  			
@@ -126,6 +134,7 @@
 		  	</tr>
 
 		  	<tr>
+		  		<td>图片Domain</td>
 		  		<td></td>
 		  	</tr>
 		  </tbody>
@@ -137,16 +146,39 @@
 		//global.console = console
 		var saveOperations = {
 			saveEntry: function(callback) {
+				project.projectConfig.webpack.entry = {}
+				project.projectConfig.webpack.common = ''
 				var $comp = $('#entryConfig')
 				var entry = {}
 				$comp.find('.form-group').each(function() {
 					var $this = $(this)
 					var name = $this.find('input[name="entryName"]').val()
+					name = $.trim(name)
 					if(name) {
 						entry[name] = $this.find('input[name="entryFiles"]').tagsinput('items')
 					}
 				})
 				project.projectConfig.webpack.entry = entry
+
+				var $commonChecked = $comp.find('.commonCheck:checked').eq(0)
+				if($commonChecked.length) {
+					var commonName = $commonChecked.closest('.form-group').find('[name="entryName"]').val()
+					if(commonName) {
+						project.projectConfig.webpack.common = commonName
+					}
+					
+				} 
+
+				project.saveProjConfig(callback)
+			},
+			savePackDir: function(callback) {
+				var $comp = $('#packNameConfig')
+				var dirName = $comp.find('[name="packDirName"]').val()
+				if(!dirName) {
+					alert('请输入dir名字')
+					return
+				}
+				project.projectConfig.webpack.packDirName = dirName
 				project.saveProjConfig(callback)
 			}
 		}
@@ -187,6 +219,24 @@
 			project.updateMiddleware()
 		}()
 
+		//Pack Dir Name
+		void function() {
+			var $comp = $('#packNameConfig')
+			project.getProjConfig(function(conf) {
+				var wpconf = conf.webpack
+				if(wpconf.packDirName) {
+					$comp.find('[name="packDirName"]').val(wpconf.packDirName)
+				}
+			})
+
+			$comp.on('click', '.savePackDirBtn', function() {
+				saveOperations['savePackDir'](function() {
+					alert('保存成功')
+				})
+				project.updateMiddleware()
+			})
+		}()
+
 		//Entrys
 		void function() {
 			var $comp = $('#entryConfig')
@@ -202,23 +252,33 @@
 				saveOperations['saveEntry'](function() {
 					alert('保存成功')
 				})
+				project.updateMiddleware()
+			})
+			.on('change', '.commonCheck', function() {
+				var $this = $(this)
+				if($this.prop('checked')) {
+					$comp.find('.commonCheck').not($this).prop('checked', false)
+				}
 			})
 
 			project.getProjConfig(function(conf) {
 				var wpconf = conf.webpack
-				var name, files
+				var name, files, isCommon = false
 				if(wpconf.entry) {
 					for(name in wpconf.entry) {
+						isCommon = (wpconf.common && wpconf.common == name)
 						files = wpconf.entry[name]
-						newRow(name, files)
+						newRow(name, files, isCommon)
 					}
 				}
+
 			})
 
-			function newRow(name, entries) {
+			function newRow(name, entries, isCommon) {
 				$row = $($.parseHTML(tmpl('entry_row', {
 					name: name,
-					entrystr: $.isArray(entries) ? entries.join(',') : ''
+					entrystr: $.isArray(entries) ? entries.join(',') : '',
+					isCommon: isCommon
 				})))
 				$rows.append($row)
 				$row.find('input.tags').tagsinput()
