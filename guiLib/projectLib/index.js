@@ -28,6 +28,10 @@ exports.getLoadedProject = function() {
 	return matcher.installedProject
 }
 
+exports.getProjectById = function(id) {
+	return matcher.installedProject[id]
+}
+
 exports.queryLoadedResult = function() {
 	var html = '<ul>'
 	var projects = exports.getLoadedProject()
@@ -45,4 +49,17 @@ exports.loadProject = function(path) {
 	matcher.installedProject[id] = project
 	project.id = id
 	return project
+}
+
+exports.unloadProject = function(id) {
+	var project = matcher.installedProject[id]
+	if(project) {
+		project.close()
+		delete matcher.installedProject[id]
+	}
+}
+
+exports.saveWpConfig = function(project, wpconf) {
+	project.projectConfig.webpack.test = wpconf
+	project.saveProjConfig()
 }

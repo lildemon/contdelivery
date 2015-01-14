@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>配置</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="css/bootstrap-tagsinput.css">
+	<script src="js/jquery-1.9.1.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap-tagsinput.min.js"></script>
+	<script src="js/utils.js"></script>
+	<style>
+		.bootstrap-tagsinput { margin-bottom: 0; }
+	</style>
+</head>
+<body>
+	<div class="container">
+		 
+
+		<table class="table table-bordered">
+			<caption><h2>webpack配置</h2></caption>
+		  <thead>
+		  	<tr>
+		  		<th>类别</th><th>设置属性</th>
+		  	</tr>
+		  </thead>
+		  <tbody>
+		  	<tr>
+		  		<td>Entry</td>
+		  		<td>
+		  			
+		  			<form class="form-horizontal" role="form" id="entryConfig">
+						
+						<script type="text/template" id="entry_row">
+							<div class="form-group">
+							    <label class="col-md-2 control-label"><button type="button" class="btn btn-danger btn-xs removeEntryBtn">X</button>&nbsp; Entry:</label>
+							    <div class="col-md-10 form-inline">
+							      <div class="input-group">
+							      	<input class="form-control" type="text" value="<%=name%>" placeholder="Entry Name" name="entryName">
+							      	<input class="form-control tags" type="text" value="<%=entrystr%>" placeholder="Contains File.." name="entryFiles">
+							      </div>
+							      	<p>
+							      		As Common：<input type="checkbox">
+							      	</p>
+							    </div>
+
+						  	</div>
+						</script>
+		  				<div class="rows">
+		  				<!-- 
+		  					<div class="form-group">
+		  										    <label class="col-md-2 control-label"><button type="button" class="btn btn-danger btn-xs">X</button>&nbsp; Entry:</label>
+		  										    <div class="col-md-10 form-inline">
+		  										      <div class="input-group">
+		  										      	<input class="form-control" type="text" value="" placeholder="Entry Name">
+		  										      	<input class="form-control" type="text" value="" placeholder="Contains File..">
+		  										      </div>
+		  										    </div>
+		  										  </div>
+		  										  <div class="form-group">
+		  										    <label class="col-md-2 control-label"><button type="button" class="btn btn-danger btn-xs">X</button>&nbsp; Entry:</label>
+		  										    <div class="col-md-10 form-inline">
+		  										      <div class="input-group">
+		  										      	<input class="form-control" type="text" value="" placeholder="Entry Name">
+		  										      	<input class="form-control" type="text" value="" placeholder="Contains File..">
+		  										      </div>
+		  										    </div>
+		  										  </div>
+		  										  <div class="form-group">
+		  										    <label class="col-md-2 control-label"><button type="button" class="btn btn-danger btn-xs">X</button>&nbsp; Entry:</label>
+		  										    <div class="col-md-10 form-inline">
+		  										      	<input class="form-control" type="text" value="" placeholder="Entry Name">
+		  										      	<input class="form-control" type="text" value="" placeholder="Contains File.." data-role="tagsinput">
+		  										      	<p>
+		  										      		As Common：<input type="checkbox">
+		  										      	</p>
+		  										    </div>
+		  										    
+		  										  </div>
+		  				 -->
+		  				</div>
+					  
+					  
+					  	<p class="text-right">
+							<button type="button" class="btn btn-primary newEntryBtn">新建Entry</button>
+							<button type="button" class="btn btn-success saveEntryBtn">保存</button>
+						</p>
+					</form>
+					
+		  		</td>
+		  	</tr>
+
+		  	<tr>
+		  		<td></td>
+		  	</tr>
+		  </tbody>
+		</table>
+
+		<p class="text-center">
+			<button type="button" class="btn btn-success">保存webpack配置</button>
+		</p>
+
+	</div>
+
+	<div class="container">
+		
+		<table class="table table-bordered">
+			<caption><h2>打包配置</h2></caption>
+		  <thead>
+		  	<tr>
+		  		<th>类别</th><th>设置属性</th>
+		  	</tr>
+		  </thead>
+		  <tbody>
+		  	<tr>
+		  		<td>Entry</td>
+		  		<td>
+		  			
+		  			
+					<p class="text-right">
+						<button type="button" class="btn btn-primary">新建Entry</button>
+						<button type="button" class="btn btn-success">保存</button>
+					</p>
+		  		</td>
+		  	</tr>
+
+		  	<tr>
+		  		<td></td>
+		  	</tr>
+		  </tbody>
+		</table>
+
+	</div>
+
+	<script>
+		//global.console = console
+		var saveOperations = {
+			saveEntry: function(callback) {
+				var $comp = $('#entryConfig')
+				var entry = {}
+				$comp.find('.form-group').each(function() {
+					var $this = $(this)
+					var name = $this.find('input[name="entryName"]').val()
+					if(name) {
+						entry[name] = $this.find('input[name="entryFiles"]').tagsinput('items')
+					}
+				})
+				project.projectConfig.webpack.entry = entry
+				project.saveProjConfig(callback)
+			}
+		}
+
+		var afterSaveOperations = {
+			// get after save from save btn's parent
+		}
+
+		function parallelSave(arr, callback) {
+			// parallel save operations, optionally calls callback after all done
+			var count = arr.length
+			var finishCount = 0
+			var checkDone = function() {
+				if(finishCount == count) {
+					callback()
+				}
+			}
+			arr.forEach(function(s) {
+				saveOperations[s](function(err) {
+					finishCount++
+					checkDone()
+				})
+			})
+		}
+	</script>
+	<script>
+		var projectLib = require('./projectLib')
+		var id = getURLParameter('id')
+		var project = projectLib.getProjectById(id)
+
+
+		void function() {
+			if(!project) {
+				alert('找不到该项目')
+				return
+			}
+
+			project.updateMiddleware()
+		}()
+
+		//Entrys
+		void function() {
+			var $comp = $('#entryConfig')
+			var $rows = $comp.find('.rows')
+
+			$comp.find('.newEntryBtn').click(function() {
+				newRow()
+			})
+			$comp.on('click', '.removeEntryBtn', function() {
+				$(this).closest('.form-group').remove()
+			})
+			.on('click', '.saveEntryBtn', function() {
+				saveOperations['saveEntry'](function() {
+					alert('保存成功')
+				})
+			})
+
+			project.getProjConfig(function(conf) {
+				var wpconf = conf.webpack
+				var name, files
+				if(wpconf.entry) {
+					for(name in wpconf.entry) {
+						files = wpconf.entry[name]
+						newRow(name, files)
+					}
+				}
+			})
+
+			function newRow(name, entries) {
+				$row = $($.parseHTML(tmpl('entry_row', {
+					name: name,
+					entrystr: $.isArray(entries) ? entries.join(',') : ''
+				})))
+				$rows.append($row)
+				$row.find('input.tags').tagsinput()
+			}
+
+		}()
+
+
+	</script>
+</body>
+</html>

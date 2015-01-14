@@ -5,7 +5,7 @@
 	<title>TMUED</title>
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
-	<script src="js/jquery-1.7.2.min.js"></script>
+	<script src="js/jquery-1.9.1.min.js"></script>
 	<script src="js/utils.js"></script>
 </head>
 <body>
@@ -35,11 +35,12 @@
 
 	<script type="text/template" id="loadedItem">
 		<li data-path="<%=path%>">
-			<span><%=path%></span> &nbsp;&nbsp;&nbsp; <button data-id="<%=id%>" class="open">打开</button> &nbsp;&nbsp; <button data-path="<%=path%>" class="pack">打包</button> &nbsp;&nbsp; <button data-path="<%=path%>" class="dir">打开目录</button>
+			<span><%=path%></span> &nbsp;<button data-id="<%=id%>" class="config">配置</button> &nbsp;&nbsp; <button data-id="<%=id%>" class="open">打开</button> &nbsp;&nbsp; <button data-path="<%=path%>" class="pack">打包</button> &nbsp;&nbsp; <button data-path="<%=path%>" class="dir">打开目录</button> &nbsp;&nbsp; <button data-id="<%=id%>" data-path="<%=path%>" class="unload">卸载</button>
 		</li>
 	</script>
 
 	<script>
+		global.mainConsole = console
 
 		var projectLib = require('./projectLib')
 		var gui = require('nw.gui')
@@ -66,9 +67,22 @@
 		$('#loaded').on('click', '.open', function() {
 			gui.Shell.openExternal('http://' + $(this).data('id') + '.local.tmued.com:' + listenPort)
 		})
+		.on('click', '.config', function() {
+			var id = $(this).data('id')
+			//location.href = 'config.html'
+			gui.Window.open('config.html?id=' + id, {
+				//"new-instance": true
+			})
+			//global.console = console
+		})
 		.on('click', '.dir', function() {
 			var projPath = $(this).data('path')
-			gui.Shell.openExternal(projPath)
+			gui.Shell.showItemInFolder(projPath)
+		})
+		.on('click', '.unload', function() {
+			projectLib.unloadProject($(this).data('id'))
+			delete loadedProjectMap[$(this).data('path')]
+			updateLoadedProjects()
 		})
 		.on('click', '.pack', function() {
 			var projPath = $(this).data('path')
