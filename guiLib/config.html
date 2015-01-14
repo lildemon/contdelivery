@@ -16,7 +16,70 @@
 </head>
 <body>
 	<div class="container">
-		 
+		 <div class="container">
+		
+		<table class="table table-bordered">
+			<caption><h2>打包配置</h2></caption>
+		  <thead>
+		  	<tr>
+		  		<th>类别</th><th>设置属性</th>
+		  	</tr>
+		  </thead>
+		  <tbody>
+		  	<tr>
+		  		<td>开启自动min</td>
+		  		<td>
+		  			<div id="min">
+		  				<input type="checkbox"> 
+		  				<p class="text-right">
+							<button type="button" class="btn btn-success btnSave">保存</button>
+						</p>
+		  			</div>
+		  		</td>
+		  	</tr>
+		  	<tr>
+		  		<td>开启自动合并</td>
+		  		<td>
+		  			<div id="autoCombine">
+		  				<input type="checkbox"> 
+		  				<p class="text-right">
+							<button type="button" class="btn btn-success btnSave">保存</button>
+						</p>
+		  			</div>
+		  		</td>
+		  	</tr>
+		  	<tr>
+		  		<td>开启自动Reflow</td>
+		  		<td>
+		  			<div id="autoReflow">
+		  				<input type="checkbox"> 
+		  				<p class="text-right">
+							<button type="button" class="btn btn-success btnSave">保存</button>
+						</p>
+		  			</div>
+		  		</td>
+		  	</tr>
+
+		  	<!-- <tr>
+		  		<td>Domain</td>
+		  		<td>
+		  			
+		  			
+		  						<p class="text-right">
+		  							<button type="button" class="btn btn-primary">新建Entry</button>
+		  							<button type="button" class="btn btn-success">保存</button>
+		  						</p>
+		  		</td>
+		  	</tr>
+		  	
+		  	<tr>
+		  		<td>图片Domain</td>
+		  		<td></td>
+		  	</tr> -->
+		  </tbody>
+		</table>
+
+	</div>
 
 		<table class="table table-bordered">
 			<caption><h2>webpack配置</h2></caption>
@@ -111,38 +174,10 @@
 
 	</div>
 
-	<div class="container">
-		
-		<table class="table table-bordered">
-			<caption><h2>打包配置</h2></caption>
-		  <thead>
-		  	<tr>
-		  		<th>类别</th><th>设置属性</th>
-		  	</tr>
-		  </thead>
-		  <tbody>
-		  	<tr>
-		  		<td>Domain</td>
-		  		<td>
-		  			
-		  			
-					<p class="text-right">
-						<button type="button" class="btn btn-primary">新建Entry</button>
-						<button type="button" class="btn btn-success">保存</button>
-					</p>
-		  		</td>
-		  	</tr>
-
-		  	<tr>
-		  		<td>图片Domain</td>
-		  		<td></td>
-		  	</tr>
-		  </tbody>
-		</table>
-
-	</div>
+	
 
 	<script>
+		var _ = require('lodash')
 		//global.console = console
 		var saveOperations = {
 			saveEntry: function(callback) {
@@ -179,6 +214,33 @@
 					return
 				}
 				project.projectConfig.webpack.packDirName = dirName
+				project.saveProjConfig(callback)
+			},
+			saveAutoCombine: function(callback) {
+				if(!project.projectConfig.fispack) {
+					project.projectConfig.fispack = {}
+				}
+				_.extend(project.projectConfig.fispack, {
+					autoCombine: $('#autoCombine input[type="checkbox"]').prop('checked')
+				})
+				project.saveProjConfig(callback)
+			},
+			saveAutoReflow: function(callback) {
+				if(!project.projectConfig.fispack) {
+					project.projectConfig.fispack = {}
+				}
+				_.extend(project.projectConfig.fispack, {
+					autoReflow: $('#autoReflow input[type="checkbox"]').prop('checked')
+				})
+				project.saveProjConfig(callback)
+			},
+			saveMin: function(callback) {
+				if(!project.projectConfig.fispack) {
+					project.projectConfig.fispack = {}
+				}
+				_.extend(project.projectConfig.fispack, {
+					min: $('#min input[type="checkbox"]').prop('checked')
+				})
 				project.saveProjConfig(callback)
 			}
 		}
@@ -217,6 +279,47 @@
 			}
 
 			project.updateMiddleware()
+		}()
+
+		//Fis Pack
+		void function() {
+			var $combComp = $('#autoCombine')
+			var $reflowComp = $('#autoReflow')
+			var $minComp = $('#min')
+
+			project.getProjConfig(function(conf) {
+				var fispack = conf.fispack
+				if(fispack) {
+					if(fispack.autoCombine) {
+						$combComp.find('[type="checkbox"]').prop('checked', true)
+					}
+					if(fispack.autoReflow) {
+						$reflowComp.find('[type="checkbox"]').prop('checked', true)
+					}
+
+					if(fispack.min) {
+						$minComp.find('[type="checkbox"]').prop('checked', true)
+					}
+				}
+				
+			})
+
+			$combComp.on('click', '.btnSave', function() {
+				saveOperations['saveAutoCombine'](function() {
+					alert('保存成功')
+				})
+			})
+
+			$reflowComp.on('click', '.btnSave', function() {
+				saveOperations['saveAutoReflow'](function() {
+					alert('保存成功')
+				})
+			})
+			$minComp.on('click', '.btnSave', function() {
+				saveOperations['saveMin'](function() {
+					alert('保存成功')
+				})
+			})
 		}()
 
 		//Pack Dir Name

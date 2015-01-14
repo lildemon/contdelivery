@@ -9,13 +9,12 @@ var argv = require('minimist')(process.argv.slice(2));
 //fis.cli.name = 'hello';
 //fis.cli.info = fis.util.readJSON(__dirname + '/package.json');
 
-
-fis.config.merge({
+var config = {
 	modules: {
 		parser: {
 			shtml: 'ssi',
-			sass: 'sass',
-			scss: 'sass',
+			sass: 'nodesass',
+			scss: 'nodesass',
 			coffee: 'coffee-script',
 			md: 'marked'
 		},
@@ -44,9 +43,9 @@ fis.config.merge({
 			// https://github.com/hefangshi/fis-postpackager-simple
 			simple: {
 				//开始autoCombine可以将零散资源进行自动打包
-				autoCombine: true,
+				autoCombine: false,
 				//开启autoReflow使得在关闭autoCombine的情况下，依然会优化脚本与样式资源引用位置
-				autoReflow: true,
+				autoReflow: false,
 				output: "packed/auto_combine_${hash}"
 			}
 		},
@@ -67,17 +66,32 @@ fis.config.merge({
 	pack: {
 		// TODO: pass custom pack
 	}
-})
+}
+
+if(argv.combine) {
+	config.settings.postpackager.simple.autoCombine = true
+}
+if(argv.reflow) {
+	config.settings.postpackager.simple.autoReflow = true
+}
+
+
+fis.config.merge(config)
 
 
 // 开启release --pack
-fis.cli.run([
+var fisArgv = [
 	'node',
 	'fis',
 	'release',
 	'--root', path.resolve(argv.root),
 	'--dest', path.resolve(argv.dest),
-	'--pack',
-	'-o'
-])
+	'--pack'
+]
+
+if(argv.min) {
+	fisArgv.push('-o')
+}
+
+fis.cli.run(fisArgv)
 
