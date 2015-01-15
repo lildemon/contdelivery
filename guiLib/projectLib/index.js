@@ -7,6 +7,7 @@ var path = require('path'),
 	child_process = require('child_process')
 
 
+
 var app = express()
 app.use(matcher)
 
@@ -43,9 +44,13 @@ exports.queryLoadedResult = function() {
 }
 
 var idCounter = 1
-exports.loadProject = function(path) {
-	var project = Project.get(path)
-	var id = idCounter++
+exports.loadProject = function(projPath) {
+	var project = Project.get(projPath)
+	var projbase = path.basename(projPath)
+	var id = /[^\u0000-\u00FF]/.test(projbase) ? idCounter++ : projbase.toLowerCase()
+	if(!!~projbase.indexOf('.') || matcher.installedProject[id]) {
+		id = idCounter++
+	}
 	matcher.installedProject[id] = project
 	project.id = id
 	return project
