@@ -21,6 +21,10 @@ var config = {
 		postpackager: 'simple'
 	},
 	roadmap: {
+		domain: {
+			/*'image': ['http://img8.91huo.cn/hua/activity/exchange'],
+			'**': '/activity/hua'*/
+		},
 		ext: {
 			sass: 'css',
 			scss: 'css',
@@ -28,10 +32,12 @@ var config = {
 			coffee: 'js',
 			md: 'html'
 		},
-		path: [{
-			reg: '**.css',
-			useSprite: true
-		}]
+		path: [
+			{
+				reg: '**.css',
+				useSprite: true
+			}
+		]
 	},
 	//项目排除掉_xxx.scss，这些属于框架文件，不用关心
 	// 同上，去掉_xxx.shtml
@@ -70,11 +76,16 @@ var config = {
 
 if(argv.combine) {
 	config.settings.postpackager.simple.autoCombine = true
+} else {
+	// 是否绝对化路径？ 如果否，那就不能重定位和内嵌，和依赖分析
+	config.roadmap.path.push({
+		reg: '**',
+		useStandard: false
+	})
 }
 if(argv.reflow) {
 	config.settings.postpackager.simple.autoReflow = true
 }
-
 
 fis.config.merge(config)
 
@@ -86,11 +97,18 @@ var fisArgv = [
 	'release',
 	'--root', path.resolve(argv.root),
 	'--dest', path.resolve(argv.dest),
-	'--pack'
+	'--pack',
+	'--unique',
+	'--domains'
 ]
 
 if(argv.min) {
 	fisArgv.push('-o')
+}
+
+if(argv.fisfile) {
+	fisArgv.push('--file')
+	fisArgv.push(argv.fisfile)
 }
 
 fis.cli.run(fisArgv)

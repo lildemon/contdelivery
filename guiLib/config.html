@@ -217,30 +217,15 @@
 				project.saveProjConfig(callback)
 			},
 			saveAutoCombine: function(callback) {
-				if(!project.projectConfig.fispack) {
-					project.projectConfig.fispack = {}
-				}
-				_.extend(project.projectConfig.fispack, {
-					autoCombine: $('#autoCombine input[type="checkbox"]').prop('checked')
-				})
+				project.setConfig('fispack.autoCombine', $('#autoCombine input[type="checkbox"]').prop('checked'))
 				project.saveProjConfig(callback)
 			},
 			saveAutoReflow: function(callback) {
-				if(!project.projectConfig.fispack) {
-					project.projectConfig.fispack = {}
-				}
-				_.extend(project.projectConfig.fispack, {
-					autoReflow: $('#autoReflow input[type="checkbox"]').prop('checked')
-				})
+				project.setConfig('fispack.autoReflow', $('#autoReflow input[type="checkbox"]').prop('checked'))
 				project.saveProjConfig(callback)
 			},
 			saveMin: function(callback) {
-				if(!project.projectConfig.fispack) {
-					project.projectConfig.fispack = {}
-				}
-				_.extend(project.projectConfig.fispack, {
-					min: $('#min input[type="checkbox"]').prop('checked')
-				})
+				project.setConfig('fispack.min', $('#min input[type="checkbox"]').prop('checked'))
 				project.saveProjConfig(callback)
 			}
 		}

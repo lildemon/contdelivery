@@ -48,6 +48,7 @@
 		var gui = require('nw.gui')
 		var child_process = require('child_process')
 		var path = require('path')
+		var fs = require('fs')
 		var loadedProjectMap = {}, LOADED = 1
 		var listenPort = 8223
 
@@ -94,6 +95,7 @@
 			var confis = path.join(path.dirname(process.execPath), 'ContFis')
 			var node = path.join(confis, 'node.exe')
 			var $this = $(this)
+			$this.closest('li').find('.msg').text('正在打包。。。')
 
 			project.compileWebpack(function() {
 
@@ -103,6 +105,12 @@
 						'--root', path.join(projPath, 'wwwroot'), // use Project.wwwroot
 						'--dest', path.join(projPath, 'output')
 					]
+
+					var fisfile = path.join(projPath, 'fis-config.js')
+					if(fs.existsSync(fisfile)) {
+						jobArg.push('--fisfile')
+						jobArg.push(fisfile)
+					}
 					if(conf.fispack && conf.fispack.autoCombine) {
 						jobArg.push('--combine')
 					}
