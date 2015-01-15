@@ -97,9 +97,13 @@
 			var $this = $(this)
 			$this.closest('li').find('.msg').text('正在打包。。。')
 
-			project.compileWebpack(function() {
-
-				project.getProjConfig(function(conf) {
+			project.getProjConfig(function(conf) {
+				if(conf.webpack.entry) {
+					project.compileWebpack(runPack)
+				} else {
+					runPack()
+				}
+				function runPack() {
 					var jobArg = [
 						'index.js',
 						'--root', path.join(projPath, 'wwwroot'), // use Project.wwwroot
@@ -146,10 +150,13 @@
 						}
 						//console.log(out)
 					})
-				})
-
-				
+				}
 			})
+
+			/*project.compileWebpack(function() {
+				project.getProjConfig(function(conf) {
+				})
+			})*/
 
 			
 		})

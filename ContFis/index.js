@@ -16,7 +16,7 @@ var config = {
 			sass: 'nodesass',
 			scss: 'nodesass',
 			coffee: 'coffee-script',
-			md: 'marked'
+			//md: 'marked'
 		},
 		postpackager: 'simple'
 	},
@@ -30,10 +30,11 @@ var config = {
 			scss: 'css',
 			shtml: 'html',
 			coffee: 'js',
-			md: 'html'
+			//md: 'html'
 		},
 		path: [
 			{
+				// https://github.com/fex-team/fis-spriter-csssprites
 				reg: '**.css',
 				useSprite: true
 			}
