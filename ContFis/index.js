@@ -36,7 +36,8 @@ var config = {
 			{
 				// https://github.com/fex-team/fis-spriter-csssprites
 				reg: '**.css',
-				useSprite: true
+				useSprite: true,
+				useStandard: false
 			}
 		]
 	},
@@ -77,6 +78,13 @@ var config = {
 
 if(argv.combine) {
 	config.settings.postpackager.simple.autoCombine = true
+	config.roadmap.path = [
+		{
+			// https://github.com/fex-team/fis-spriter-csssprites
+			reg: '**.css',
+			useSprite: true
+		}
+	]
 } else {
 	// 是否绝对化路径？ 如果否，那就不能重定位和内嵌，和依赖分析
 	config.roadmap.path.push({
