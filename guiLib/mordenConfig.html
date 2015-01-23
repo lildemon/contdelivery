@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>配置</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="css/bootstrap-tagsinput.css">
+	<script src="js/jquery-1.9.1.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/bootstrap-tagsinput.min.js"></script>
+	<script src="js/avalon.modern.js"></script>
+	<script src="js/utils.js"></script>
+	<style>
+		.bootstrap-tagsinput { margin-bottom: 0; }
+	</style>
+</head>
+<body>
+	<div class="container">
+		<table class="table table-bordered">
+			<caption><h2>服务器配置</h2></caption>
+		  <thead>
+		  	<tr>
+		  		<th>类别</th><th>设置属性</th>
+		  	</tr>
+		  </thead>
+		  <tbody>
+		  	<tr ms-controller="virtual-directory">
+		  		<td>虚拟目录</td>
+		  		<td>
+		  			<div id="min">
+		  				<div class="form-group" ms-repeat="dirs">            
+		  					<label class="col-md-2 control-label"><button type="button" class="btn btn-danger btn-xs removeEntryBtn">X</button>&nbsp; 虚拟目录:</label>            
+		  					<div class="col-md-10 form-inline">              
+		  						<div class="input-group">               
+		  							<input class="form-control" type="text"  placeholder="目录名" name="entryName" ms-duplex="el.name" > 
+		  							<input class="form-control tags" type="file" value="" ms-duplex="el.dir" name="dir" nwdirectory>
+		  						</div> 
+				           </div>           
+				       </div>
+
+		  				<p class="text-right">
+		  					<button type="button" class="btn btn-default btnSave" ms-click="newDir">新建</button>
+							<button type="button" class="btn btn-success btnSave">保存</button>
+						</p>
+		  			</div>
+		  		</td>
+		  	</tr>
+		  	
+		  </tbody>
+		</table>
+	</div>
+
+	<script src="js/mordenConfig.js"></script>
+</body>
+</html>
