@@ -3219,7 +3219,7 @@ duplexBinding.INPUT = function(element, evaluator, data) {
         })
     }
 
-    if (/text|password/.test(element.type)) {
+    if (/text|password|file/.test(element.type)) {
         watchValueInTimer(function() {
             if (root.contains(element)) {
                 if (element.value !== element.oldValue) {
@@ -4399,7 +4399,7 @@ avalon.ready = function(fn) {
     }
 }
 avalon.config({
-    loader: true
+    loader: false
 })
 avalon.ready(function() {
     avalon.scan(DOC.body)

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<title>Start Point</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<script src="js/jquery-1.9.1.min.js"></script>
+	<script src="js/Remix.min.js"></script>
+	<style>
+		.panel-heading { padding: 5px 15px; }
+		.panel-body { padding: 10px; }
+			.panel-body ul { margin: 0; }
+		.panel-footer { padding: 10px 15px; }
+		.panel-footer p { margin: 0; }
+
+		.col-sm-6 { padding-left: 10px; padding-right: 10px; }
+	</style>
+</head>
+<body>
+	<div class="well well-sm">
+		<div class="container-fluid">
+			<h4>管理已装载项目</h4>
+			<div class="row" id="loaded-container">
+				<div class="col-sm-6 col-md-4">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<button type="button" class="btn btn-danger btn-xs">X</button>&nbsp;&nbsp;<span>E:\FEWork\TMUED\Project</span>
+					
+						</div>
+						<div class="panel-body">
+							<ul>
+								<li><a href="http://project.local.tmued.com/">http://project.local.tmued.com/</a></li>
+							</ul>
+						  	
+						</div>
+						<div class="panel-footer">
+							<p class="text-right">
+						  		
+					  			<button type="button" class="btn btn-primary btn-xs">配置</button>
+					  			<button type="button" class="btn btn-info btn-xs">打开目录</button>
+					  			<button type="button" class="btn btn-danger btn-xs">打包</button>
+						  	</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6 col-md-4">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<button type="button" class="btn btn-danger btn-xs">X</button>&nbsp;&nbsp;<span>E:\FEWork\TMUED\Project</span>
+					
+						</div>
+						<div class="panel-body">
+							<ul>
+								<li><a href="http://project.local.tmued.com/">http://project.local.tmued.com/</a></li>
+								<li><a href="http://project.local.tmued.com/">http://project.local.tmued.com/</a></li>
+								<li><a href="http://project.local.tmued.com/">http://project.local.tmued.com/</a></li>
+							</ul>
+						  	
+						</div>
+						<div class="panel-footer">
+							<p class="text-right">
+						  		<button type="button" class="btn btn-primary btn-xs">Small button</button>
+					  			<button type="button" class="btn btn-default btn-xs">Small button</button>
+						  	</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6 col-md-4">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<button type="button" class="btn btn-danger btn-xs">X</button>&nbsp;&nbsp;<span>E:\FEWork\TMUED\Project</span>
+					
+						</div>
+						<div class="panel-body">
+							<ul>
+								<li><a href="http://project.local.tmued.com/">http://project.local.tmued.com/</a></li>
+								<li><a href="http://project.local.tmued.com/">http://project.local.tmued.com/</a></li>
+							</ul>
+						  	
+						</div>
+						<div class="panel-footer">
+							<p class="text-right">
+						  		<button type="button" class="btn btn-primary btn-xs">Small button</button>
+					  			<button type="button" class="btn btn-default btn-xs">Small button</button>
+						  	</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	<div class="well well-sm">
+		<div class="container-fluid">
+			<h4>载入新项目</h4>
+			<div class="row">
+				<div class="col-sm-6 col-md-4" id="load-from-history">
+					<div class="panel panel-info">
+						<div class="panel-heading"><span class="glyphicon glyphicon-time"> </span> &nbsp;项目载入历史</div>
+						<div class="panel-body">
+    						<ul class="list-group">
+							  <li class="list-group-item"><span>E:\FEWork\TMUED\Project</span><span class="pull-right"><button type="button" class="btn btn-info btn-xs">装载</button></span></li>
+							  <li class="list-group-item"><span>E:\FEWork\TMUED\Project</span><span class="pull-right"><button type="button" class="btn btn-info btn-xs">装载</button></span></li>
+							  <li class="list-group-item"><span>E:\FEWork\TMUED\Project</span><span class="pull-right"><button type="button" class="btn btn-info btn-xs">装载</button></span></li>
+							  <li class="list-group-item"><span>E:\FEWork\TMUED\Project</span><span class="pull-right"><button type="button" class="btn btn-info btn-xs">装载</button></span></li>
+							  <li class="list-group-item"><span>E:\FEWork\TMUED\Project</span><span class="pull-right"><button type="button" class="btn btn-info btn-xs">装载</button></span></li>
+							</ul>
+
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6 col-md-4" id="load-from-folder">
+					<div class="panel panel-success">
+						<div class="panel-heading"><span class="glyphicon glyphicon-folder-open"> </span> &nbsp;从文件夹装载项目</div>
+						<div class="panel-body">
+    						<div class="input-group">
+    							<input type="file" class="form-control" nwdirectory>
+    							<div class="input-group-btn">
+            						<button type="button" class="btn btn-success" tabindex="-1">载入</button>
+            					</div>
+    						</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

@@ -13,6 +13,7 @@
 	<script src="js/utils.js"></script>
 	<style>
 		.bootstrap-tagsinput { margin-bottom: 0; }
+		table thead th:nth-child(1) { min-width: 100px; }
 	</style>
 </head>
 <body>
@@ -28,16 +29,25 @@
 		  	<tr ms-controller="virtual-directory">
 		  		<td>虚拟目录</td>
 		  		<td>
-		  			<div id="min">
-		  				<div class="form-group" ms-repeat="dirs">            
-		  					<label class="col-md-2 control-label"><button type="button" class="btn btn-danger btn-xs removeEntryBtn">X</button>&nbsp; 虚拟目录:</label>            
-		  					<div class="col-md-10 form-inline">              
-		  						<div class="input-group">               
-		  							<input class="form-control" type="text"  placeholder="目录名" name="entryName" ms-duplex="el.name" > 
-		  							<input class="form-control tags" type="file" value="" ms-duplex="el.dir" name="dir" nwdirectory>
-		  						</div> 
-				           </div>           
-				       </div>
+		  			<div>
+
+						<div class="panel panel-default" ms-repeat="dirs">
+						  <div class="panel-heading">
+						  	<div class="input-group">
+								  <div class="input-group-btn">
+								    <button type="button" class="btn btn-danger btn-default removeEntryBtn" ms-click="$remove">X</button>
+								  </div>
+								  <input class="form-control" type="text"  placeholder="目录名" name="entryName" ms-duplex="el.name" > 
+								</div>
+						  </div>
+						  <div class="panel-body">
+						    <p>	
+						    	<input class="form-control tags" type="file" value="" ms-duplex="el.dir" name="dir" nwdirectory>
+						    </p>
+						  </div>
+						</div>
+
+
 
 		  				<p class="text-right">
 		  					<button type="button" class="btn btn-default btnSave" ms-click="newDir">新建</button>
@@ -48,6 +58,57 @@
 		  	</tr>
 		  	
 		  </tbody>
+		</table>
+	</div>
+
+	<div class="container">
+		<table class="table table-bordered">
+			<caption><h2>webpack配置</h2></caption>
+			<thead>
+			  	<tr>
+			  		<th>类别</th><th>设置属性</th>
+			  	</tr>
+			</thead>
+			<tr ms-controller="entry-manager">
+		  		<td>Entry</td>
+		  		<td>
+		  			
+		  			<form class="form-horizontal" role="form" id="entryConfig">
+						
+						
+		  				<div class="rows">
+
+		  					<div class="panel panel-default" ms-repeat="entries">
+							  <div class="panel-heading">
+							  	<div class="input-group">
+									  <div class="input-group-btn">
+									    <button type="button" class="btn btn-danger btn-default removeEntryBtn" ms-click="$remove">X</button>
+									  </div>
+									  <input class="form-control" type="text" value="" placeholder="Entry Name" ms-duplex="el.name" name="entryName">
+									</div>
+							  </div>
+							  <div class="panel-body">
+							    
+
+							    <p>	
+							    	<input class="form-control" type="text" value="" ms-duplex="el.entryInput" placeholder="空格或者逗号隔开" name="entryFiles" ms-keypress="containsChange($event, $index)">
+							    </p>
+							    <p>
+							    	Contains: <span ms-repeat="el.contains"><span class="label label-info"> {{el}} <a href="###" ms-click="$remove">X</a></span> &nbsp;&nbsp;</span>
+							    </p>
+							  </div>
+							</div>
+		  				</div>
+					  
+					  
+					  	<p class="text-right">
+							<button type="button" class="btn btn-primary newEntryBtn" ms-click="newEntry">新建Entry</button>
+							<button type="button" class="btn btn-success saveEntryBtn">保存</button>
+						</p>
+					</form>
+					
+		  		</td>
+		  	</tr>
 		</table>
 	</div>
 
