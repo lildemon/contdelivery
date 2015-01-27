@@ -129,7 +129,138 @@
 	</div>
 	<script src="js/jquery-1.9.1.min.js"></script>
 	<script src="js/Remix.js"></script>
+	<script src="js/utils.js"></script>
 	<script src="js/enhancedMain.js"></script>
+	<script>
+		global.mainConsole = console
+
+		var projectLib = require('./projectLib')
+		var gui = require('nw.gui')
+		var child_process = require('child_process')
+		var path = require('path')
+		var fs = require('fs')
+		var loadedProjectMap = {}, LOADED = 1
+		var listenPort = 8223
+
+		projectLib.startServer(listenPort)
+
+		$('#recent').on('click', 'button', function() {
+			loadProject($(this).data('path'))
+		})
+
+		$('#loaded').on('click', '.open', function() {
+			gui.Shell.openExternal('http://' + $(this).data('id') + '.local.tmued.com:' + listenPort)
+		})
+		.on('click', '.config', function() {
+			var id = $(this).data('id')
+			//location.href = 'config.html'
+			gui.Window.open('config.html?id=' + id, {
+				//"new-instance": true
+			})
+			//global.console = console
+		})
+		.on('click', '.dir', function() {
+			var projPath = $(this).data('path')
+			gui.Shell.showItemInFolder(projPath)
+		})
+		.on('click', '.pack', function() {
+			var project = projectLib.getProjectById($(this).data('id'))
+			
+
+			var projPath = $(this).data('path')
+			var confis = path.join(path.dirname(process.execPath), 'ContFis')
+			var node = path.join(confis, 'node.exe')
+			var $this = $(this)
+			$this.closest('li').find('.msg').text('正在打包。。。')
+
+			project.getProjConfig(function(conf) {
+				if(conf.webpack.entry) {
+					project.compileWebpack(runPack)
+				} else {
+					runPack()
+				}
+				function runPack() {
+					var jobArg = [
+						'index.js',
+						'--root', path.join(projPath, 'wwwroot'), // use Project.wwwroot
+						'--dest', path.join(projPath, 'output')
+					]
+
+					var fisfile = path.join(projPath, 'fis-config.js')
+					if(fs.existsSync(fisfile)) {
+						jobArg.push('--fisfile')
+						jobArg.push(fisfile)
+					}
+					if(conf.fispack && conf.fispack.autoCombine) {
+						jobArg.push('--combine')
+					}
+
+					if(conf.fispack && conf.fispack.min) {
+						jobArg.push('--min')
+					}
+
+					if(conf.fispack && conf.fispack.autoReflow) {
+						jobArg.push('--reflow')
+					}
+
+					var job = child_process.spawn(node, jobArg, {
+						cwd: confis
+					})
+
+					var out = '', err = ''
+					job.stdout.on('data', function(data) {
+						out += data
+					})
+
+					job.stderr.on('data', function(data) {
+						err += data
+					})
+
+					job.on('close', function(code) {
+						if(code != 0) {
+							console.log('ERROR: \n' + err)
+							alert('打包时发生错误： \n' + err + '\n\n')
+							$this.closest('li').find('.msg').text(err)
+						} else {
+							alert('打包完成')
+						}
+						//console.log(out)
+					})
+				}
+			})
+
+		})
+
+		function loadProject(projPath) {
+			if(!projPath) {
+				return
+			}
+			if(loadedProjectMap[projPath]) {
+				alert('你已经装载了该项目')
+				return
+			}
+			var project = projectLib.loadProject(projPath)
+			loadedProjectMap[projPath] = LOADED
+			saveProjectPath(projPath)
+			updateRecentPaths()
+			var loadInst = LoadedItem({
+				path: projPath,
+				urls: ['http://' + project.id + 'local.tmued.com:' + 8223],
+				unloadProject: function() {
+					projectLib.unloadProject(project.id)
+					delete loadedProjectMap[projPath]
+					updateLoadedProjects()
+					loadInst.slideDestroy()
+				}
+			})
+		}
+
+
+		function updateRecentPaths() {
+			reloadHistory()
+		}
+
+	</script>
 	<script>
 		LoadedItem({
 			path: 'SDLKF', 

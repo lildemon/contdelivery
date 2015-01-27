@@ -273,6 +273,10 @@
         return this.include.apply(this, arguments);
       };
 
+      Component.prototype.empty = function() {
+        return this.node.empty();
+      };
+
       Component.prototype.destroy = function(noRemove) {
         var $id, comp, key, keyedComp, _ref;
         if (typeof this.onDestroy === "function") {
@@ -512,6 +516,11 @@
           };
           CompProxy.getAll = function() {
             return parent._getAllChildComp(NewComp);
+          };
+          CompProxy.destroyAll = function() {
+            return $.each(CompProxy.getAll(), function(i, comp) {
+              return comp.destroy();
+            });
           };
           return CompProxy;
         };

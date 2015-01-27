@@ -55,43 +55,31 @@ historyItem = Remix.create
 		Button: Button
 	template: """
 		<li class="list-group-item">
-			<span ref="projPath"></span>
+			<span ref="projPath">E:\FEWork\TMUED\Project</span>
 			<span class="pull-right"><button type="button" remix="Button" class="btn btn-info btn-xs" data-type="info" data-size="xs" data-title="装载" data-onclick="@loadProject">装载</button>
 			</span>
 		</li>
 	"""
-	render: (data) ->
-		@loadProject = data.loadProject
+	loadProject: ->
+		projectPath = @key
+		loadProject(@key)
+	render: ->
+		@projPath.text(@key)
 
 loadHistory = Remix.create
+	remixChild:
+		historyItem: historyItem
 	template: '<ul class="list-group"></ul>'
 	onNodeCreated: ->
 		$('#historyContainer').empty().append(@node)
 	render: (data) -> # should data be a array
-		if @loadedBefore
-			@destroy() # clear previous created list
-			loadHistory(data)
-			return
-		@loadedBefore = true
-
-		for history in data
-			@append Remix.create
-				remixChild:
-					Button: Button
-				template: """
-					<li class="list-group-item">
-						<span ref="projPath">E:\FEWork\TMUED\Project</span>
-						<span class="pull-right"><button type="button" remix="Button" class="btn btn-info btn-xs" data-type="info" data-size="xs" data-title="装载" data-onclick="@loadProject">装载</button>
-						</span>
-					</li>
-				"""
-				loadProject: =>
-					#Get project definition
-					@loadProject()
-	loadProject: ->
-		alert('outer')
-
-
+		@node.empty()
+		historyItem.destroyAll()
+		storedPaths = getProjectPaths()
+		for history in storedPaths
+			@append @historyItem null, history
+reloadHistory = loadHistory
+loadHistory()
 
 Dialog = Remix.create
 	template: """
