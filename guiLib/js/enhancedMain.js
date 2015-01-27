@@ -51,8 +51,13 @@ Dialog = Remix.create({
   },
   render: function(data) {
     this.title.text(data.title);
-    this.body.empty().append(data.content);
-    this.footer.empty().append(data.buttons);
+    this.include(this.body, data.content);
+    if (data.buttons) {
+      this.include(this.footer, data.buttons);
+      this.footer.show();
+    } else {
+      this.footer.hide();
+    }
     return this.node.slideDown();
   },
   slideAway: function() {
@@ -65,18 +70,43 @@ Dialog = Remix.create({
 });
 
 choosePort = function(callback) {
-  return Dialog({
+  var portDialog, portNum;
+  portNum = '';
+  return portDialog = Dialog({
     title: '80端口已被占用，请输入你想要的端口号',
     content: Remix.create({
-      template: "<div class=\"input-group\">\n	<input type=\"file\" class=\"form-control\" nwdirectory>\n	<div class=\"input-group-btn\">\n		<button type=\"button\" class=\"btn btn-success\" tabindex=\"-1\">载入</button>\n	</div>\n</div>"
-    }),
-    buttons: Remix.create({
-      remixChild: {
-        Button: Button
+      template: "<div class=\"input-group\">\n	<input type=\"text\" class=\"form-control\" ref=\"portNum\">\n	<div class=\"input-group-btn\">\n		<button type=\"button\" class=\"btn btn-primary\" tabindex=\"-1\" ref=\"okbtn\">确认</button>\n	</div>\n</div>",
+      remixEvent: {
+        'keyup, [ref="portNum"]': 'updatePortNum',
+        'click, [ref="okbtn"]': 'savePort'
       },
-      template: "<p><button remix=\"Button\" data-type=\"primary\" data-size=\"xs\" data-onclick=\"@configProject\" data-title=\"确定\" key=\"configBtn\"></button></p>"
+      updatePortNum: function() {
+        var val;
+        val = this.portNum.val();
+        if (/[^\d]/.test(val)) {
+          val = val.replace(/[^\d]/g, '');
+          this.portNum.val(val);
+        }
+        portNum = val;
+        return console.log(portNum);
+      },
+      savePort: function() {
+        return portDialog.slideAway();
+      }
     })
   });
 };
+
+
+/*
+		buttons: Remix.create
+			remixChild:
+				Button: Button
+			template: """
+				<p><button remix="Button" data-type="primary" data-size="df" data-onclick="@savePort" data-title="确定" key="configBtn"></button></p>
+			"""
+			savePort: ->
+				portDialog.slideAway()
+ */
 
 choosePort();

@@ -78,9 +78,14 @@ Dialog = Remix.create
 		@appendTo(document.body)
 
 	render: (data) ->
-		@title.text(data.title)
-		@body.empty().append(data.content)
-		@footer.empty().append(data.buttons)
+		@title.text data.title
+		@include @body, data.content
+
+		if data.buttons 
+			@include @footer, data.buttons
+			@footer.show()
+		else @footer.hide()
+
 		@node.slideDown()
 
 	slideAway: ->
@@ -89,26 +94,42 @@ Dialog = Remix.create
 
 choosePort = (callback) ->
 	portNum = ''
-	Dialog
+	portDialog = Dialog
 		title: '80端口已被占用，请输入你想要的端口号'
 		content: Remix.create
 			template: """
 				<div class="input-group">
 					<input type="text" class="form-control" ref="portNum">
+					<div class="input-group-btn">
+						<button type="button" class="btn btn-primary" tabindex="-1" ref="okbtn">确认</button>
+					</div>
 				</div>
 			"""
 			remixEvent:
-				'change, [ref="portNum"]': 'updatePortNum'
+				'keyup, [ref="portNum"]': 'updatePortNum',
+				'click, [ref="okbtn"]': 'savePort'
 
-			updatePortNum:
-				portNum = @portNum.val()
+			updatePortNum: ->
+				val = @portNum.val()
+				if /[^\d]/.test val
+					val = val.replace(/[^\d]/g, '')
+					@portNum.val(val)
+				portNum = val
 				console.log portNum
 
+			savePort: ->
+				portDialog.slideAway()
+				
+		###
 		buttons: Remix.create
 			remixChild:
 				Button: Button
 			template: """
-				<p><button remix="Button" data-type="primary" data-size="xs" data-onclick="@configProject" data-title="确定" key="configBtn"></button></p>
+				<p><button remix="Button" data-type="primary" data-size="df" data-onclick="@savePort" data-title="确定" key="configBtn"></button></p>
 			"""
+			savePort: ->
+				portDialog.slideAway()
+		###
+
 
 choosePort()
