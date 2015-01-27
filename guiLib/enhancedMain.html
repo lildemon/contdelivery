@@ -98,7 +98,7 @@
 				<div class="col-sm-6 col-md-4" id="load-from-history">
 					<div class="panel panel-info">
 						<div class="panel-heading"><span class="glyphicon glyphicon-time"> </span> &nbsp;项目载入历史</div>
-						<div class="panel-body">
+						<div class="panel-body" id="historyContainer">
     						<ul class="list-group">
 							  <li class="list-group-item"><span>E:\FEWork\TMUED\Project</span><span class="pull-right"><button type="button" class="btn btn-info btn-xs">装载</button></span></li>
 							  <li class="list-group-item"><span>E:\FEWork\TMUED\Project</span><span class="pull-right"><button type="button" class="btn btn-info btn-xs">装载</button></span></li>
@@ -131,7 +131,7 @@
 	<script src="js/Remix.js"></script>
 	<script src="js/enhancedMain.js"></script>
 	<script>
-		LoadedProject({
+		LoadedItem({
 			path: 'SDLKF', 
 			urls: ['skfjsdl', 'sdiouvsdone', 'sd','f','sdf','sd'], 
 			unloadProject: function(){

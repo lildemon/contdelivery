@@ -7,7 +7,7 @@ Button = Remix.create
 		@node.text data.title
 		@clickCallback = data.onclick
 
-LoadedProject = Remix.create
+LoadedItem = Remix.create
 	remixChild:
 		Button: Button
 
@@ -49,6 +49,49 @@ LoadedProject = Remix.create
 	slideDestroy: ->
 		@node.slideUp 'fast', =>
 			@destroy()
+
+historyItem = Remix.create
+	remixChild:
+		Button: Button
+	template: """
+		<li class="list-group-item">
+			<span ref="projPath"></span>
+			<span class="pull-right"><button type="button" remix="Button" class="btn btn-info btn-xs" data-type="info" data-size="xs" data-title="装载" data-onclick="@loadProject">装载</button>
+			</span>
+		</li>
+	"""
+	render: (data) ->
+		@loadProject = data.loadProject
+
+loadHistory = Remix.create
+	template: '<ul class="list-group"></ul>'
+	onNodeCreated: ->
+		$('#historyContainer').empty().append(@node)
+	render: (data) -> # should data be a array
+		if @loadedBefore
+			@destroy() # clear previous created list
+			loadHistory(data)
+			return
+		@loadedBefore = true
+
+		for history in data
+			@append Remix.create
+				remixChild:
+					Button: Button
+				template: """
+					<li class="list-group-item">
+						<span ref="projPath">E:\FEWork\TMUED\Project</span>
+						<span class="pull-right"><button type="button" remix="Button" class="btn btn-info btn-xs" data-type="info" data-size="xs" data-title="装载" data-onclick="@loadProject">装载</button>
+						</span>
+					</li>
+				"""
+				loadProject: =>
+					#Get project definition
+					@loadProject()
+	loadProject: ->
+		alert('outer')
+
+
 
 Dialog = Remix.create
 	template: """
@@ -118,18 +161,10 @@ choosePort = (callback) ->
 				console.log portNum
 
 			savePort: ->
-				portDialog.slideAway()
+				if portNum.length
+					callback?(parseInt(portNum))
+					portDialog.slideAway()
+				else
+					alert "亲"
 				
-		###
-		buttons: Remix.create
-			remixChild:
-				Button: Button
-			template: """
-				<p><button remix="Button" data-type="primary" data-size="df" data-onclick="@savePort" data-title="确定" key="configBtn"></button></p>
-			"""
-			savePort: ->
-				portDialog.slideAway()
-		###
 
-
-choosePort()
