@@ -12,7 +12,7 @@ LoadedProject = Remix.create
 		Button: Button
 
 	template: """
-		<div class="col-sm-6 col-md-4">
+		<div class="col-sm-6 col-md-4" style="display: none">
 			<div class="panel panel-primary">
 				<div class="panel-heading">
 					<button remix="Button" data-type="danger" data-size="xs" data-onclick="@unloadProject" data-title="X" key="unloadBtn"></button> &nbsp;&nbsp;<span ref="pathtxt"></span>
@@ -21,11 +21,9 @@ LoadedProject = Remix.create
 					<ul ref="urlList">
 						
 					</ul>
-				  	
 				</div>
 				<div class="panel-footer">
 					<p class="text-right">
-				  		
 			  			<button remix="Button" data-type="primary" data-size="xs" data-onclick="@configProject" data-title="配置" key="configBtn"></button>
 			  			<button remix="Button" data-type="info" data-size="xs" data-onclick="@openDirectory" data-title="打开目录" key="openDirBtn"></button>
 			  			<button remix="Button" data-type="danger" data-size="xs" data-onclick="@packProject" data-title="打包" key="packBtn"></button>
@@ -46,11 +44,71 @@ LoadedProject = Remix.create
 				<li><a href="#{url}">#{url}</a></li>
 			"""
 		{@openDirectory, @unloadProject, @configProject, @packProject} = data
+		@node.slideDown('fast')
 
-	openDirectory: ->
+	slideDestroy: ->
+		@node.slideUp 'fast', =>
+			@destroy()
 
-	unloadProject: ->
+Dialog = Remix.create
+	template: """
+		<div class="modal">
+			<div class="modal-backdrop fade in"></div>
+		  <div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" ref="title">Modal title</h4>
+		      </div>
+		      <div class="modal-body" ref="body">
+		        <p>Loading...</p>
+		      </div>
+		      <div class="modal-footer" ref="footer">
+		      	
+		      </div>
+		    </div><!-- /.modal-content -->
+		  </div><!-- /.modal-dialog -->
+		</div>
+	"""
 
-	configProject: ->
+	remixEvent:
+		'click, .close': 'slideAway'
 
-	packProject: ->
+	onNodeCreated: ->
+		@appendTo(document.body)
+
+	render: (data) ->
+		@title.text(data.title)
+		@body.empty().append(data.content)
+		@footer.empty().append(data.buttons)
+		@node.slideDown()
+
+	slideAway: ->
+		@node.slideUp 300, =>
+			@destroy()
+
+choosePort = (callback) ->
+	portNum = ''
+	Dialog
+		title: '80端口已被占用，请输入你想要的端口号'
+		content: Remix.create
+			template: """
+				<div class="input-group">
+					<input type="text" class="form-control" ref="portNum">
+				</div>
+			"""
+			remixEvent:
+				'change, [ref="portNum"]': 'updatePortNum'
+
+			updatePortNum:
+				portNum = @portNum.val()
+				console.log portNum
+
+		buttons: Remix.create
+			remixChild:
+				Button: Button
+			template: """
+				<p><button remix="Button" data-type="primary" data-size="xs" data-onclick="@configProject" data-title="确定" key="configBtn"></button></p>
+			"""
+
+choosePort()
