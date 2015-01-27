@@ -15,79 +15,15 @@
 		.panel-footer p { margin: 0; }
 
 		.col-sm-6 { padding-left: 10px; padding-right: 10px; }
+		.pathTitle { display: inline-block; width: 80%; overflow: hidden; }
+		.alert { margin-bottom: 0; margin-top: 10px; }
 	</style>
 </head>
 <body>
 	<div class="well well-sm">
 		<div class="container-fluid">
 			<h4>管理已装载项目</h4>
-			<div class="row" id="loaded-container">
-				<div class="col-sm-6 col-md-4">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							<button type="button" class="btn btn-danger btn-xs">X</button>&nbsp;&nbsp;<span>E:\FEWork\TMUED\Project</span>
-					
-						</div>
-						<div class="panel-body">
-							<ul>
-								<li><a href="http://project.local.tmued.com/">http://project.local.tmued.com/</a></li>
-							</ul>
-						  	
-						</div>
-						<div class="panel-footer">
-							<p class="text-right">
-						  		
-					  			<button type="button" class="btn btn-primary btn-xs">配置</button>
-					  			<button type="button" class="btn btn-info btn-xs">打开目录</button>
-					  			<button type="button" class="btn btn-danger btn-xs">打包</button>
-						  	</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-sm-6 col-md-4">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							<button type="button" class="btn btn-danger btn-xs">X</button>&nbsp;&nbsp;<span>E:\FEWork\TMUED\Project</span>
-					
-						</div>
-						<div class="panel-body">
-							<ul>
-								<li><a href="http://project.local.tmued.com/">http://project.local.tmued.com/</a></li>
-								<li><a href="http://project.local.tmued.com/">http://project.local.tmued.com/</a></li>
-								<li><a href="http://project.local.tmued.com/">http://project.local.tmued.com/</a></li>
-							</ul>
-						  	
-						</div>
-						<div class="panel-footer">
-							<p class="text-right">
-						  		<button type="button" class="btn btn-primary btn-xs">Small button</button>
-					  			<button type="button" class="btn btn-default btn-xs">Small button</button>
-						  	</p>
-						</div>
-					</div>
-				</div>
-				<div class="col-sm-6 col-md-4">
-					<div class="panel panel-primary">
-						<div class="panel-heading">
-							<button type="button" class="btn btn-danger btn-xs">X</button>&nbsp;&nbsp;<span>E:\FEWork\TMUED\Project</span>
-					
-						</div>
-						<div class="panel-body">
-							<ul>
-								<li><a href="http://project.local.tmued.com/">http://project.local.tmued.com/</a></li>
-								<li><a href="http://project.local.tmued.com/">http://project.local.tmued.com/</a></li>
-							</ul>
-						  	
-						</div>
-						<div class="panel-footer">
-							<p class="text-right">
-						  		<button type="button" class="btn btn-primary btn-xs">Small button</button>
-					  			<button type="button" class="btn btn-default btn-xs">Small button</button>
-						  	</p>
-						</div>
-					</div>
-				</div>
-			</div>
+			<div class="row" id="loaded-container"></div>
 			
 		</div>
 	</div>
@@ -98,16 +34,7 @@
 				<div class="col-sm-6 col-md-4" id="load-from-history">
 					<div class="panel panel-info">
 						<div class="panel-heading"><span class="glyphicon glyphicon-time"> </span> &nbsp;项目载入历史</div>
-						<div class="panel-body" id="historyContainer">
-    						<ul class="list-group">
-							  <li class="list-group-item"><span>E:\FEWork\TMUED\Project</span><span class="pull-right"><button type="button" class="btn btn-info btn-xs">装载</button></span></li>
-							  <li class="list-group-item"><span>E:\FEWork\TMUED\Project</span><span class="pull-right"><button type="button" class="btn btn-info btn-xs">装载</button></span></li>
-							  <li class="list-group-item"><span>E:\FEWork\TMUED\Project</span><span class="pull-right"><button type="button" class="btn btn-info btn-xs">装载</button></span></li>
-							  <li class="list-group-item"><span>E:\FEWork\TMUED\Project</span><span class="pull-right"><button type="button" class="btn btn-info btn-xs">装载</button></span></li>
-							  <li class="list-group-item"><span>E:\FEWork\TMUED\Project</span><span class="pull-right"><button type="button" class="btn btn-info btn-xs">装载</button></span></li>
-							</ul>
-
-						</div>
+						<div class="panel-body" id="historyContainer"></div>
 					</div>
 				</div>
 				<div class="col-sm-6 col-md-4" id="load-from-folder">
@@ -115,9 +42,9 @@
 						<div class="panel-heading"><span class="glyphicon glyphicon-folder-open"> </span> &nbsp;从文件夹装载项目</div>
 						<div class="panel-body">
     						<div class="input-group">
-    							<input type="file" class="form-control" nwdirectory>
+    							<input type="file" class="form-control" id="projpath" nwdirectory>
     							<div class="input-group-btn">
-            						<button type="button" class="btn btn-success" tabindex="-1">载入</button>
+            						<button type="button" class="btn btn-success" tabindex="-1" id="addProjectBtn">载入</button>
             					</div>
     						</div>
 
@@ -144,34 +71,48 @@
 
 		projectLib.startServer(listenPort)
 
-		$('#recent').on('click', 'button', function() {
-			loadProject($(this).data('path'))
+		$('#addProjectBtn').click(function() {
+			var projPath = $('#projpath').val()
+			if(projPath) {
+				loadProject(projPath)
+			}
 		})
 
-		$('#loaded').on('click', '.open', function() {
-			gui.Shell.openExternal('http://' + $(this).data('id') + '.local.tmued.com:' + listenPort)
-		})
-		.on('click', '.config', function() {
-			var id = $(this).data('id')
-			//location.href = 'config.html'
-			gui.Window.open('config.html?id=' + id, {
-				//"new-instance": true
-			})
-			//global.console = console
-		})
-		.on('click', '.dir', function() {
-			var projPath = $(this).data('path')
-			gui.Shell.showItemInFolder(projPath)
-		})
-		.on('click', '.pack', function() {
-			var project = projectLib.getProjectById($(this).data('id'))
+		function loadProject(projPath) {
+			if(!projPath) {
+				return
+			}
+			if(loadedProjectMap[projPath]) {
+				alert('你已经装载了该项目')
+				return
+			}
+			var project = projectLib.loadProject(projPath)
+			loadedProjectMap[projPath] = LOADED
+			saveProjectPath(projPath)
+			updateRecentPaths()
+			var loadInst = LoadedItem({
+				path: projPath,
+				urls: ['http://' + project.id + '.local.tmued.com:' + listenPort],
+				unloadProject: function() {
+					projectLib.unloadProject(project.id)
+					delete loadedProjectMap[projPath]
+					loadInst.slideDestroy()
+				}
+			}, project.id)
+		}
+
+
+		function updateRecentPaths() {
+			reloadHistory()
+		}
+
+		function packProject(id, projPath, inst) {
+
+			var project = projectLib.getProjectById(id)
 			
-
-			var projPath = $(this).data('path')
 			var confis = path.join(path.dirname(process.execPath), 'ContFis')
 			var node = path.join(confis, 'node.exe')
-			var $this = $(this)
-			$this.closest('li').find('.msg').text('正在打包。。。')
+			inst.msg('<strong>正在打包</strong>')
 
 			project.getProjConfig(function(conf) {
 				if(conf.webpack.entry) {
@@ -218,57 +159,19 @@
 
 					job.on('close', function(code) {
 						if(code != 0) {
-							console.log('ERROR: \n' + err)
-							alert('打包时发生错误： \n' + err + '\n\n')
-							$this.closest('li').find('.msg').text(err)
+							//console.log('ERROR: \n' + err)
+							inst.msg('打包时发生错误： \n' + err + '\n\n')
+							//$this.closest('li').find('.msg').text(err)
 						} else {
-							alert('打包完成')
+							inst.closeMsg('打包完成')
+							inst.openOutput()
 						}
 						//console.log(out)
 					})
 				}
 			})
-
-		})
-
-		function loadProject(projPath) {
-			if(!projPath) {
-				return
-			}
-			if(loadedProjectMap[projPath]) {
-				alert('你已经装载了该项目')
-				return
-			}
-			var project = projectLib.loadProject(projPath)
-			loadedProjectMap[projPath] = LOADED
-			saveProjectPath(projPath)
-			updateRecentPaths()
-			var loadInst = LoadedItem({
-				path: projPath,
-				urls: ['http://' + project.id + 'local.tmued.com:' + 8223],
-				unloadProject: function() {
-					projectLib.unloadProject(project.id)
-					delete loadedProjectMap[projPath]
-					updateLoadedProjects()
-					loadInst.slideDestroy()
-				}
-			})
 		}
 
-
-		function updateRecentPaths() {
-			reloadHistory()
-		}
-
-	</script>
-	<script>
-		LoadedItem({
-			path: 'SDLKF', 
-			urls: ['skfjsdl', 'sdiouvsdone', 'sd','f','sdf','sd'], 
-			unloadProject: function(){
-				this.slideDestroy()
-			}
-		}, 'sdffevwefefwe')
 	</script>
 </body>
 </html>

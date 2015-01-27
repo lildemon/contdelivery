@@ -1,3 +1,6 @@
+gui = require('nw.gui')
+path = require('path')
+
 Button = Remix.create
 	template: '<button type="button" class="btn"></button>'
 	remixEvent:
@@ -18,9 +21,15 @@ LoadedItem = Remix.create
 					<button remix="Button" data-type="danger" data-size="xs" data-onclick="@unloadProject" data-title="X" key="unloadBtn"></button> &nbsp;&nbsp;<span ref="pathtxt"></span>
 				</div>
 				<div class="panel-body">
+					
 					<ul ref="urlList">
 						
 					</ul>
+
+					<div class="alert alert-info alert-dismissible" role="alert" ref="alert" style="display: none;">
+					  <button type="button" class="close" data-dismiss="alert" ref="closeAlert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+					  <div ref="alertMsg"></div>
+					</div>
 				</div>
 				<div class="panel-footer">
 					<p class="text-right">
@@ -33,6 +42,10 @@ LoadedItem = Remix.create
 		</div>
 	"""
 
+	remixEvent:
+		'click, [ref="urlList"] li a': 'openLink'
+		'click, [ref="closeAlert"]': 'closeMsg'
+
 	onNodeCreated: ->
 		@appendTo('#loaded-container')
 
@@ -43,19 +56,47 @@ LoadedItem = Remix.create
 			@urlList.append """
 				<li><a href="#{url}">#{url}</a></li>
 			"""
-		{@openDirectory, @unloadProject, @configProject, @packProject} = data
+		# {@openDirectory, @unloadProject, @configProject, @packProject} = data
+		@unloadProject = data.unloadProject
 		@node.slideDown('fast')
+
+	closeMsg: ->
+		@alert.slideUp()
+
+	openLink: (e) ->
+		e.preventDefault()
+		$this = $(e.target)
+		gui.Shell.openExternal($this.attr('href'))
+
+	openDirectory: ->
+		projPath = @pathtxt.text()
+		gui.Shell.showItemInFolder(projPath)
+
+	configProject: ->
+		gui.Window.open('config.html?id=' + @key)
+
+	packProject: ->
+		packProject(@key, @pathtxt.text(), this)
 
 	slideDestroy: ->
 		@node.slideUp 'fast', =>
 			@destroy()
+
+	openOutput: ->
+		projPath = path.join(@pathtxt.text(), 'output')
+		gui.Shell.showItemInFolder(projPath)
+
+	msg: (msg) ->
+		@alertMsg.html(msg)
+		@alert.slideDown()
+
 
 historyItem = Remix.create
 	remixChild:
 		Button: Button
 	template: """
 		<li class="list-group-item">
-			<span ref="projPath">E:\FEWork\TMUED\Project</span>
+			<span ref="projPath" class="pathTitle" title=""></span>
 			<span class="pull-right"><button type="button" remix="Button" class="btn btn-info btn-xs" data-type="info" data-size="xs" data-title="装载" data-onclick="@loadProject">装载</button>
 			</span>
 		</li>
@@ -64,7 +105,8 @@ historyItem = Remix.create
 		projectPath = @key
 		loadProject(@key)
 	render: ->
-		@projPath.text(@key)
+		@projPath.text(@key).attr('title', @key)
+
 
 loadHistory = Remix.create
 	remixChild:
@@ -73,8 +115,6 @@ loadHistory = Remix.create
 	onNodeCreated: ->
 		$('#historyContainer').empty().append(@node)
 	render: (data) -> # should data be a array
-		@node.empty()
-		historyItem.destroyAll()
 		storedPaths = getProjectPaths()
 		for history in storedPaths
 			@append @historyItem null, history
