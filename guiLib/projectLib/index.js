@@ -11,17 +11,28 @@ var path = require('path'),
 var app = express()
 app.use(matcher)
 
-exports.startServer = function(port) {
+exports.startServer = function(port, callback) {
 	var httpServer = app.listen(port) 
+	httpServer.on('error', handle)
+	httpServer.on('listen', function() { handle() })
 
-	var io = socketio.listen(httpServer, {
-		"log level": 1
-	})
-	io.sockets.on("connection", function(socket) {
-		socket.emit("ok")
-	})
+	function handle(e) {
+		if(!e) {
+			var io = socketio.listen(httpServer, {
+				"log level": 1
+			})
+			io.sockets.on("connection", function(socket) {
+				socket.emit("ok")
+			})
 
-	require('../../lib/Watcher').sockets = io.sockets
+			require('../../lib/Watcher').sockets = io.sockets
+			callback()
+		} else {
+			callback(e)
+		}
+	}
+
+	
 }
 
 

@@ -73,7 +73,8 @@ LoadedItem = Remix.create
 		gui.Shell.showItemInFolder(projPath)
 
 	configProject: ->
-		gui.Window.open('config.html?id=' + @key)
+		#gui.Window.open('mordenConfig.html?id=' + @key)
+		configPage('mordenConfig.html?id=' + @key)
 
 	packProject: ->
 		packProject(@key, @pathtxt.text(), this)
@@ -119,7 +120,7 @@ loadHistory = Remix.create
 		for history in storedPaths
 			@append @historyItem null, history
 reloadHistory = loadHistory
-loadHistory()
+
 
 Dialog = Remix.create
 	template: """
@@ -150,6 +151,7 @@ Dialog = Remix.create
 
 	render: (data) ->
 		@title.text data.title
+		@body.empty()
 		@include @body, data.content
 
 		if data.buttons 
@@ -195,4 +197,17 @@ choosePort = (callback) ->
 				else
 					alert "亲"
 				
-
+configPage = Remix.create
+	template: """
+		<div class="configPage">
+			<iframe ref="frame" src="" frameborder="0"></iframe>
+		</div>
+	"""
+	onNodeCreated: ->
+		@appendTo(document.body)
+	render: (src) ->
+		$(document.body).css('overflow-y', 'hidden')
+		@frame.attr('src', src)
+	onDestroy: ->
+		$(document.body).css('overflow-y', '')
+		global.console = window.console

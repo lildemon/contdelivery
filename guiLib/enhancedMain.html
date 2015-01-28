@@ -17,9 +17,14 @@
 		.col-sm-6 { padding-left: 10px; padding-right: 10px; }
 		.pathTitle { display: inline-block; width: 80%; overflow: hidden; }
 		.alert { margin-bottom: 0; margin-top: 10px; }
+
+		.configPage { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: 100; }
+			.configPage iframe { width: 100%; height: 100%; }
+		#loaded-container .col-sm-6, #loaded-container .col-md-4 { float: none; display: inline-block; vertical-align: top; }
 	</style>
 </head>
 <body>
+	
 	<div class="well well-sm">
 		<div class="container-fluid">
 			<h4>管理已装载项目</h4>
@@ -67,9 +72,20 @@
 		var path = require('path')
 		var fs = require('fs')
 		var loadedProjectMap = {}, LOADED = 1
-		var listenPort = 8223
+		var listenPort = 800
 
-		projectLib.startServer(listenPort)
+		function startSrv() {
+			projectLib.startServer(listenPort, function(e) {
+				if(e) {
+					choosePort(function(port) {
+						listenPort = port
+						startSrv()
+					})
+				}
+			})
+		}
+		startSrv()
+		
 
 		$('#addProjectBtn').click(function() {
 			var projPath = $('#projpath').val()
@@ -92,7 +108,7 @@
 			updateRecentPaths()
 			var loadInst = LoadedItem({
 				path: projPath,
-				urls: ['http://' + project.id + '.local.tmued.com:' + listenPort],
+				urls: ['http://' + project.id + '.local.tmued.com' + (listenPort == 80 ? '' : ':' + listenPort)],
 				unloadProject: function() {
 					projectLib.unloadProject(project.id)
 					delete loadedProjectMap[projPath]
@@ -171,6 +187,8 @@
 				}
 			})
 		}
+
+		loadHistory()
 
 	</script>
 </body>

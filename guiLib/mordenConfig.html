@@ -8,110 +8,293 @@
 	<link rel="stylesheet" href="css/bootstrap-tagsinput.css">
 	<script src="js/jquery-1.9.1.min.js"></script>
 	<script src="js/bootstrap.min.js"></script>
-	<script src="js/bootstrap-tagsinput.min.js"></script>
 	<script src="js/avalon.modern.js"></script>
 	<script src="js/utils.js"></script>
 	<style>
 		.bootstrap-tagsinput { margin-bottom: 0; }
-		table thead th:nth-child(1) { min-width: 100px; }
+		table thead th:nth-child(1) { min-width: 130px; }
+		.panel-primary>.panel-heading { position: fixed; width: 100%; z-index: 1000; top: 0; left: 0; }
+
 	</style>
 </head>
 <body>
-	<div class="container">
-		<table class="table table-bordered">
-			<caption><h2>服务器配置</h2></caption>
-		  <thead>
-		  	<tr>
-		  		<th>类别</th><th>设置属性</th>
-		  	</tr>
-		  </thead>
-		  <tbody>
-		  	<tr ms-controller="virtual-directory">
-		  		<td>虚拟目录</td>
-		  		<td>
-		  			<div>
-
-						<div class="panel panel-default" ms-repeat="dirs">
-						  <div class="panel-heading">
-						  	<div class="input-group">
-								  <div class="input-group-btn">
-								    <button type="button" class="btn btn-danger btn-default removeEntryBtn" ms-click="$remove">X</button>
-								  </div>
-								  <input class="form-control" type="text"  placeholder="目录名" name="entryName" ms-duplex="el.name" > 
-								</div>
-						  </div>
-						  <div class="panel-body">
-						    <p>	
-						    	<input class="form-control tags" type="file" value="" ms-duplex="el.dir" name="dir" nwdirectory>
-						    </p>
-						  </div>
-						</div>
-
-
-
-		  				<p class="text-right">
-		  					<button type="button" class="btn btn-default btnSave" ms-click="newDir">新建</button>
-							<button type="button" class="btn btn-success btnSave">保存</button>
-						</p>
-		  			</div>
-		  		</td>
-		  	</tr>
-		  	
-		  </tbody>
-		</table>
-	</div>
-
-	<div class="container">
-		<table class="table table-bordered">
-			<caption><h2>webpack配置</h2></caption>
-			<thead>
-			  	<tr>
-			  		<th>类别</th><th>设置属性</th>
-			  	</tr>
-			</thead>
-			<tr ms-controller="entry-manager">
-		  		<td>Entry</td>
-		  		<td>
-		  			
-		  			<form class="form-horizontal" role="form" id="entryConfig">
-						
-						
-		  				<div class="rows">
-
-		  					<div class="panel panel-default" ms-repeat="entries">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<span class="pull-right"><button type="button" class="btn btn-danger btn-xs" id="closeWin">X</button></span>
+			<span class="glyphicon glyphicon-wrench"> </span> &nbsp;配置 <span id="currentPath">path</span></div>
+		<div class="container" style="margin-top: 30px;">
+			<table class="table table-bordered">
+				<caption><h2>服务器配置</h2></caption>
+			  <thead>
+				<tr>
+					<th>类别</th><th>设置属性</th>
+				</tr>
+			  </thead>
+			  <tbody>
+				<tr ms-controller="virtual-directory">
+					<td>增加虚拟目录</td>
+					<td>
+						<div>
+	
+							<div class="panel panel-default" ms-repeat="dirs">
 							  <div class="panel-heading">
-							  	<div class="input-group">
+								<div class="input-group">
 									  <div class="input-group-btn">
-									    <button type="button" class="btn btn-danger btn-default removeEntryBtn" ms-click="$remove">X</button>
+										<button type="button" class="btn btn-danger btn-default removeEntryBtn" ms-click="$remove">X</button>
 									  </div>
-									  <input class="form-control" type="text" value="" placeholder="Entry Name" ms-duplex="el.name" name="entryName">
+									  <input class="form-control" type="text"  placeholder="目录名" name="entryName" ms-duplex="el.name"  > 
+									  
 									</div>
 							  </div>
 							  <div class="panel-body">
-							    
-
-							    <p>	
-							    	<input class="form-control" type="text" value="" ms-duplex="el.entryInput" placeholder="空格或者逗号隔开" name="entryFiles" ms-keypress="containsChange($event, $index)">
-							    </p>
-							    <p>
-							    	Contains: <span ms-repeat="el.contains"><span class="label label-info"> {{el}} <a href="###" ms-click="$remove">X</a></span> &nbsp;&nbsp;</span>
-							    </p>
+								<p>	
+									<input class="form-control tags" type="file" value="" name="dir" ms-change="selectDir($event, $index)" nwdirectory>
+									<p>{{el.dir}}</p>
+								</p>
 							  </div>
 							</div>
-		  				</div>
-					  
-					  
-					  	<p class="text-right">
-							<button type="button" class="btn btn-primary newEntryBtn" ms-click="newEntry">新建Entry</button>
-							<button type="button" class="btn btn-success saveEntryBtn">保存</button>
-						</p>
-					</form>
+	
+	
+	
+							<p class="text-right">
+								<button type="button" class="btn btn-default btnSave" ms-click="newDir">新建</button>
+								<button type="button" class="btn btn-success btnSave" ms-click="saveBtn">保存</button>
+							</p>
+						</div>
+					</td>
+				</tr>
+				
+			  </tbody>
+			</table>
+		</div>
+	
+		<div class="container">
+			<table class="table table-bordered">
+				<caption><h2>打包配置</h2></caption>
+				<thead>
+					<tr>
+						<th>类别</th><th>设置属性</th>
+					</tr>
+				</thead>
+				<tbody>
 					
-		  		</td>
-		  	</tr>
-		</table>
-	</div>
+					<tr ms-controller="redir">
+						<td>资源重定向<input type="checkbox" ms-duplex-checked="redir"> </td>
+						<td>
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" ms-duplex-checked="min"> 开启min压缩
+								</label>
+							</div>
 
-	<script src="js/mordenConfig.js"></script>
-</body>
+							<p><strong>开启资源重定向后支持<em>base64图片内嵌</em> <em>合并js</em> <em>合并css</em> <em>定义域名前缀</em></strong></p>
+							<p>资源重定向选项： <em>注：相对路径会转化为绝对路径</em></p>
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" ms-duplex-checked="autoReflow"> 开启Reflow（css移到head，js移到body尾部）
+								</label>
+							</div>
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" ms-duplex-checked="autoCombine"> 自动合并（强制开启Reflow）
+								</label>
+							</div>
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" ms-duplex-checked="md5"> 文件名加上MD5
+								</label>
+							</div>
+							<p class="text-right">
+								<button type="button" class="btn btn-success btnSave" ms-click="saveBtn">保存</button>
+							</p>
+						</td>
+					</tr>
+					<tr ms-controller="custom-pack">
+						<td>自定义合并规则</td>
+						<td>
+							<div class="panel panel-default" ms-repeat="packs">
+							  <div class="panel-heading">
+								<div class="input-group">
+									  <div class="input-group-btn">
+										<button type="button" class="btn btn-danger btn-default removeEntryBtn" ms-click="$remove">X</button>
+									  </div>
+									  <input class="form-control" type="text"  placeholder="输出为" ms-duplex="el.name" name="name"> 
+									  
+									</div>
+							  </div>
+							  <div class="panel-body">
+								<p>	
+									<input class="form-control tags" type="text" value="" name="dir" ms-keypress="containsChange($event, $index)" ms-duplex="el.entryInput" ms-blur="containsChange($event, $index)" placeholder="空格或者逗号隔开">
+								</p>
+								<p>
+									Contains: <span ms-repeat="el.contains"><span class="label label-info"> {{el}} <a href="###" ms-click="$remove">X</a></span> &nbsp;&nbsp;</span>
+								</p>
+							  </div>
+							</div>
+							<p class="text-right">
+								<button type="button" class="btn btn-default btnSave" ms-click="newPack">新建</button>
+								<button type="button" class="btn btn-success btnSave" ms-click="saveBtn">保存</button>
+							</p>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	
+		<div class="container">
+			<table class="table table-bordered">
+				<caption>
+					<h2>发布域名前缀配置</h2>
+					<p><em>请确保开启资源重定向以支持域名前缀</em></p>
+				</caption>
+				<thead>
+					<tr>
+						<th>类别</th><th>设置属性</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ms-controller="fis-domain-custom">
+						<td>自定义</td>
+						<td>
+						
+							<div class="panel panel-default" ms-repeat="customs">
+							  <div class="panel-heading">
+								<div class="input-group">
+									  <div class="input-group-btn">
+										<button type="button" class="btn btn-danger btn-default removeEntryBtn" ms-click="$remove">X</button>
+									  </div>
+									  <input class="form-control" type="text" value="" placeholder="File Glob" ms-duplex="el.glob" name="entryName">
+									</div>
+							  </div>
+							  <div class="panel-body">
+								<p>	
+									<input class="form-control" type="text" value="" ms-duplex="el.entryInput" placeholder="空格或者逗号隔开" name="entryFiles" ms-keypress="domainsChange($event, $index)" ms-blur="domainsChange($event, $index)">
+								</p>
+								<p>
+									Contains: <span ms-repeat="el.domains"><span class="label label-info"> {{el}} <a href="###" ms-click="$remove">X</a></span> &nbsp;&nbsp;</span>
+								</p>
+							  </div>
+							</div>
+							<p class="text-right">
+								<button type="button" class="btn btn-primary newEntryBtn" ms-click="newCustom">新建</button>
+								<button type="button" class="btn btn-success saveEntryBtn" ms-click="saveBtn">保存</button>
+							</p>
+						</td>
+					</tr>
+
+					<tr ms-controller="fis-domain-image">
+						<td>图片资源域名</td>
+						<td>
+							<p>	
+								<input class="form-control" type="text" value="" ms-duplex="el.entryInput" placeholder="空格或者逗号隔开" name="entryFiles" ms-keypress="domainsChange($event)" ms-blur="domainsChange($event)">
+							</p>
+							<p>
+								Contains: <span ms-repeat="domains"><span class="label label-info"> {{el}} <a href="###" ms-click="$remove">X</a></span> &nbsp;&nbsp;</span>
+							</p>
+							<p class="text-right">
+								<button type="button" class="btn btn-success saveEntryBtn" ms-click="saveBtn">保存</button>
+							</p>
+						</td>
+					</tr>
+
+					<tr ms-controller="domain-global">
+						<td>全局资源域名（包括webpack的publicPath）</td>
+						<td>
+							<p>	
+								<input class="form-control" type="text" value="/" name="entryFiles" ms-duplex="domain">
+							</p>
+							<p class="text-right">
+								<button type="button" class="btn btn-success saveEntryBtn" ms-click="saveBtn">保存</button>
+							</p>
+						</td>
+					</tr>
+
+
+				</tbody>
+			</table>
+		</div>
+	
+		<div class="container">
+			<table class="table table-bordered">
+				<caption><h2>webpack配置</h2></caption>
+				<thead>
+					<tr>
+						<th>类别</th><th>设置属性</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr ms-controller="pack-dir">
+				  		<td>Pack目录名</td>
+				  		<td>
+				  			<form class="form-horizontal" id="packNameConfig">
+				  				<div class="form-group">
+								    <div class="col-md-10 form-inline">
+								      <div class="input-group">
+								      	<input class="form-control" type="text" value="packed" placeholder="Dir Name" name="packDirName" ms-duplex="name">
+								      </div>
+									    <p class="text-right">
+											<button type="button" class="btn btn-success savePackDirBtn" ms-click="saveBtn">保存</button>
+										</p>
+								    </div>
+							  	</div>
+				  			</form>
+				  			
+				  		</td>
+				  	</tr>
+					<tr ms-controller="entry-manager">
+						<td>Entry</td>
+						<td>
+							
+							<form class="form-horizontal" role="form" id="entryConfig">
+								
+								
+								<div class="rows">
+						
+									<div class="panel panel-default" ms-repeat="entries">
+									  <div class="panel-heading">
+										<div class="input-group">
+											  <div class="input-group-btn">
+												<button type="button" class="btn btn-danger btn-default removeEntryBtn" ms-click="$remove">X</button>
+											  </div>
+											  <input class="form-control" type="text" value="" placeholder="Entry Name" ms-duplex="el.name" name="entryName">
+											</div>
+									  </div>
+									  <div class="panel-body">
+										
+						
+										<p>	
+											<input class="form-control" type="text" value="" ms-duplex="el.entryInput" placeholder="空格或者逗号隔开" name="entryFiles" ms-keypress="containsChange($event, $index)" ms-blur="containsChange($event, $index)">
+										</p>
+										<p>
+											Contains: <span ms-repeat="el.contains"><span class="label label-info"> {{el}} <a href="###" ms-click="$remove">X</a></span> &nbsp;&nbsp;</span>
+										</p>
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" ms-duplex-checked="el.isCommon" ms-change="changeCommon($event, $index)"> 作为Common Entry
+											</label>
+										</div>
+									  </div>
+									</div>
+								</div>
+							  
+							  
+								<p class="text-right">
+									<button type="button" class="btn btn-primary newEntryBtn" ms-click="newEntry">新建Entry</button>
+									<button type="button" class="btn btn-success saveEntryBtn" ms-click="saveBtn">保存</button>
+								</p>
+							</form>
+							
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<script src="js/Remix.min.js"></script>
+		<script src="js/enhancedMain.js"></script>
+		<script src="js/mordenConfig.js"></script>
+		<script>
+
+		</script>
+</div></body>
 </html>
