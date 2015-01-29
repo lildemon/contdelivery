@@ -188,7 +188,6 @@ choosePort = (callback) ->
 					val = val.replace(/[^\d]/g, '')
 					@portNum.val(val)
 				portNum = val
-				console.log portNum
 
 			savePort: ->
 				if portNum.length

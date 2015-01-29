@@ -162,8 +162,7 @@ choosePort = function(callback) {
           val = val.replace(/[^\d]/g, '');
           this.portNum.val(val);
         }
-        portNum = val;
-        return console.log(portNum);
+        return portNum = val;
       },
       savePort: function() {
         if (portNum.length) {

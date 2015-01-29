@@ -309,12 +309,12 @@
         return this.parent._delChildComp(this.constructor, this.key);
       };
 
-      Component.prototype._optimistRender = function(data) {
+      Component.prototype._optimistRender = function(state) {
         var whenReady;
-        this.data = data;
+        this.state = state;
         whenReady = (function(_this) {
           return function() {
-            _this.render(data);
+            _this.render(state);
             return setTimeout(_this.proxy(_this._clearComps), 0);
           };
         })(this);
@@ -426,7 +426,7 @@
       };
 
       Component.prototype._parseRefs = function() {
-        return this.node.find('[ref]').each((function(_this) {
+        return this.node.find('[ref]').not(this.node.find('[remix] [ref]')).each((function(_this) {
           return function(i, el) {
             var $this;
             $this = $(el);
@@ -436,37 +436,52 @@
       };
 
       Component.prototype._parseRemix = function() {
-        return this.node.find('[remix]').each((function(_this) {
-          return function(i, el) {
-            var $this, data, key, newVal, remixedComponent, val;
-            $this = $(el);
-            data = $this.data('remix');
-            if (!data) {
-              data = $this.data();
-              for (key in data) {
-                val = data[key];
-                if (val.indexOf('@') === 0) {
-                  newVal = (function(val) {
+        var handleRemixNode;
+        handleRemixNode = (function(_this) {
+          return function(el) {
+            var $el, key, propName, remixedComponent, state, val;
+            $el = $(el);
+            state = $el.data();
+            for (key in state) {
+              val = state[key];
+              if (val.indexOf('@') === 0) {
+                propName = val.substring(1);
+                if (_this[propName] != null) {
+                  state[key] = _this.proxy(_this[propName]);
+                } else {
+                  state[key] = (function(propName) {
                     return function() {
-                      var funName;
-                      funName = val.substring(1);
-                      if (_this[funName]) {
-                        return _this[funName]();
+                      if (_this[propName]) {
+                        return _this[propName]();
                       } else {
-                        throw "" + funName + " does not exist";
+                        throw "" + propName + " does not exist";
                       }
                     };
-                  })(val);
-                  data[key] = newVal;
+                  })(propName);
                 }
               }
             }
-            remixedComponent = _this[$this.attr('remix')]($this.data('remix') || $this.data(), $this.attr('key'), $this[0]);
+            remixedComponent = _this[$el.attr('remix')](state, $el.attr('key'), el);
             if (!remixedComponent.constructor.noTemplate) {
-              return $this.replaceWith(remixedComponent.node);
+              return $el.replaceWith(remixedComponent.node);
             }
           };
-        })(this));
+        })(this);
+        return this.node.find('[remix]').not(this.node.find('[remix] [remix]')).each(function() {
+          return handleRemixNode(this);
+        });
+
+        /*
+        			parseNode = (childNode) =>
+        				$(childNode).children().each (i, el) =>
+        					if $(el).is '[remix]'
+        						handleRemixNode(el)
+        					else
+        						 * TODO: performance hit, use nodeType detect?
+        						parseNode(el)
+        
+        			parseNode @node
+         */
       };
 
       Component.prototype._parseEvents = function() {
@@ -537,7 +552,7 @@
         })(Component);
         setParent = function(parent) {
           var CompProxy;
-          CompProxy = function(data, key, node) {
+          CompProxy = function(state, key, node) {
             var comp;
             if (!key) {
               key = '$default';
@@ -550,7 +565,7 @@
               comp.key = key;
               parent._regChildComp(comp, NewComp, key);
             }
-            comp._optimistRender(data);
+            comp._optimistRender(state);
             return comp;
           };
           CompProxy.setParent = setParent;

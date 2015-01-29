@@ -106,15 +106,23 @@
 			loadedProjectMap[projPath] = LOADED
 			saveProjectPath(projPath)
 			updateRecentPaths()
-			var loadInst = LoadedItem({
-				path: projPath,
-				urls: ['http://' + project.id + '.local.tmued.com' + (listenPort == 80 ? '' : ':' + listenPort)],
-				unloadProject: function() {
-					projectLib.unloadProject(project.id)
-					delete loadedProjectMap[projPath]
-					loadInst.slideDestroy()
-				}
-			}, project.id)
+			project.getProjConfig(function() {
+				var url = 'http://' + project.id + '.local.tmued.com' + (listenPort == 80 ? '' : ':' + listenPort)
+				var virtualDirs = project.getConfig('dirs') || []
+				var urls = [url].concat(virtualDirs.map(function(dir) {
+					return url + '/' + dir.name
+				}))
+				var loadInst = LoadedItem({
+					path: projPath,
+					urls: urls,
+					unloadProject: function() {
+						projectLib.unloadProject(project.id)
+						delete loadedProjectMap[projPath]
+						loadInst.slideDestroy()
+					}
+				}, project.id)
+			})
+			
 		}
 
 
