@@ -22,7 +22,7 @@ LoadedItem = Remix.create
 				</div>
 				<div class="panel-body">
 					
-					<ul ref="urlList">
+					<ul class="list-group" ref="urlList">
 						
 					</ul>
 
@@ -43,25 +43,26 @@ LoadedItem = Remix.create
 	"""
 
 	remixEvent:
-		'click, [ref="urlList"] li a': 'openLink'
-		'click, [ref="closeAlert"]': 'closeMsg'
+		'click, li a, urlList': 'openLink'
+		'change, li [type="radio"], urlList': 'switchRoot'
+		'click, closeAlert': 'closeMsg'
 
 	onNodeCreated: ->
 		@appendTo('#loaded-container')
 
 	render: (data) ->
-		@pathtxt.text data.path
-		@urlList.empty()
+		@refs.pathtxt.text data.path
+		@refs.urlList.empty()
 		data.urls.forEach (url) =>
-			@urlList.append """
-				<li><a href="#{url}">#{url}</a></li>
+			@refs.urlList.append """
+				<li class="list-group-item"><a href="#{url}">#{url}</a><span style="float:right"><input type="radio" name="root" data-url="#{url}"></span></li>
 			"""
 		# {@openDirectory, @unloadProject, @configProject, @packProject} = data
 		@unloadProject = data.unloadProject
 		@node.slideDown('fast')
 
 	closeMsg: ->
-		@alert.slideUp()
+		@refs.alert.slideUp()
 
 	openLink: (e) ->
 		e.preventDefault()
@@ -69,27 +70,31 @@ LoadedItem = Remix.create
 		gui.Shell.openExternal($this.attr('href'))
 
 	openDirectory: ->
-		projPath = @pathtxt.text()
+		projPath = @refs.pathtxt.text()
 		gui.Shell.showItemInFolder(projPath)
 
 	configProject: ->
 		#gui.Window.open('mordenConfig.html?id=' + @key)
-		configPage('mordenConfig.html?id=' + @key)
+		configPage(@key)
+
+	switchRoot: (e) ->
+
+		@state.switchRoot($(e.target).data('url'))
 
 	packProject: ->
-		packProject(@key, @pathtxt.text(), this)
+		packProject(@key, @refs.pathtxt.text(), this)
 
 	slideDestroy: ->
 		@node.slideUp 'fast', =>
 			@destroy()
 
 	openOutput: ->
-		projPath = path.join(@pathtxt.text(), 'output')
+		projPath = path.join(@refs.pathtxt.text(), 'output')
 		gui.Shell.showItemInFolder(projPath)
 
 	msg: (msg) ->
-		@alertMsg.html(msg)
-		@alert.slideDown()
+		@refs.alertMsg.html(msg)
+		@refs.alert.slideDown()
 
 
 historyItem = Remix.create
@@ -106,7 +111,7 @@ historyItem = Remix.create
 		projectPath = @key
 		loadProject(@key)
 	render: ->
-		@projPath.text(@key).attr('title', @key)
+		@refs.projPath.text(@key).attr('title', @key)
 
 
 loadHistory = Remix.create
@@ -129,7 +134,7 @@ Dialog = Remix.create
 		  <div class="modal-dialog">
 		    <div class="modal-content">
 		      <div class="modal-header">
-		        <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <button type="button" class="close" aria-label="Close"><span aria-hidden="true" ref="closeButton">&times;</span></button>
 		        <h4 class="modal-title" ref="title">Modal title</h4>
 		      </div>
 		      <div class="modal-body" ref="body">
@@ -144,20 +149,20 @@ Dialog = Remix.create
 	"""
 
 	remixEvent:
-		'click, .close': 'slideAway'
+		'click, closeButton': 'slideAway'
 
 	onNodeCreated: ->
 		@appendTo(document.body)
 
 	render: (data) ->
-		@title.text data.title
-		@body.empty()
-		@include @body, data.content
+		@refs.title.text data.title
+		@refs.body.empty()
+		@include @refs.body, data.content
 
 		if data.buttons 
-			@include @footer, data.buttons
-			@footer.show()
-		else @footer.hide()
+			@include @refs.footer, data.buttons
+			@refs.footer.show()
+		else @refs.footer.hide()
 
 		@node.slideDown()
 
@@ -179,14 +184,14 @@ choosePort = (callback) ->
 				</div>
 			"""
 			remixEvent:
-				'keyup, [ref="portNum"]': 'updatePortNum',
-				'click, [ref="okbtn"]': 'savePort'
+				'keyup, portNum': 'updatePortNum',
+				'click, okbtn': 'savePort'
 
 			updatePortNum: ->
-				val = @portNum.val()
+				val = @refs.portNum.val()
 				if /[^\d]/.test val
 					val = val.replace(/[^\d]/g, '')
-					@portNum.val(val)
+					@refs.portNum.val(val)
 				portNum = val
 
 			savePort: ->
@@ -204,9 +209,11 @@ configPage = Remix.create
 	"""
 	onNodeCreated: ->
 		@appendTo(document.body)
-	render: (src) ->
+	render: (id) ->
+		@reloadid = id
 		$(document.body).css('overflow-y', 'hidden')
-		@frame.attr('src', src)
+		@refs.frame.attr('src', 'mordenConfig.html?id=' + id)
 	onDestroy: ->
+		LoadedItem.get(@reloadid)?.state.reload()
 		$(document.body).css('overflow-y', '')
 		global.console = window.console

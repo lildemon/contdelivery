@@ -181,6 +181,10 @@
 
       Component.loadTemplate = function(template) {
         var errHandle, xhr;
+        if (template == null) {
+          this.noTemplate = true;
+          return;
+        }
         if (typeof template === 'string') {
           if (!!~template.indexOf('<')) {
             return this.templateNode = $($.parseHTML(template));
@@ -206,7 +210,7 @@
         } else if (template.nodeType && template.nodeType === 1) {
           return this.templateNode = template;
         } else {
-          return this.noTemplate = true;
+          throw 'What kind of template is this?';
         }
       };
 
@@ -218,6 +222,9 @@
           this.node = $(node);
         }
         this.child_components = {};
+        this.state = {};
+        this.refs = {};
+        this._initialRender = true;
         this._parseRemixChild();
         this._parseNode();
         this.initialize();
@@ -229,6 +236,10 @@
 
       Component.prototype.addChild = function(name, childMix) {
         return this[name] = childMix.setParent(this);
+      };
+
+      Component.prototype.setState = function(state) {
+        return this._optimistRender(state);
       };
 
       Component.prototype.render = function() {
@@ -257,7 +268,7 @@
         return child.delegateTo(this);
       };
 
-      Component.prototype.include = function(el, comp) {
+      Component.prototype.append = function(el, comp) {
         var inst;
         if (comp == null) {
           comp = el;
@@ -278,8 +289,9 @@
         }
       };
 
-      Component.prototype.append = function() {
-        return this.include.apply(this, arguments);
+      Component.prototype.include = function(el) {
+        el.empty();
+        return this.append.apply(this, arguments);
       };
 
       Component.prototype.empty = function() {
@@ -311,9 +323,15 @@
 
       Component.prototype._optimistRender = function(state) {
         var whenReady;
-        this.state = state;
+        $.extend(this.state, state);
         whenReady = (function(_this) {
           return function() {
+            if (_this._initialRender) {
+              if (typeof _this.initialRender === "function") {
+                _this.initialRender(state);
+              }
+              _this._initialRender = false;
+            }
             _this.render(state);
             return setTimeout(_this.proxy(_this._clearComps), 0);
           };
@@ -406,8 +424,8 @@
         nodeReady = (function(_this) {
           return function() {
             _this._parseRefs();
-            _this._parseRemix();
             _this._parseEvents();
+            _this._parseRemix();
             return _this.onNodeCreated();
           };
         })(this);
@@ -430,7 +448,7 @@
           return function(i, el) {
             var $this;
             $this = $(el);
-            return _this[$this.attr('ref')] = $this;
+            return _this.refs[$this.attr('ref')] = $this;
           };
         })(this));
       };
@@ -439,7 +457,7 @@
         var handleRemixNode;
         handleRemixNode = (function(_this) {
           return function(el) {
-            var $el, key, propName, remixedComponent, state, val;
+            var $el, RemixClass, key, propName, remixedComponent, state, val;
             $el = $(el);
             state = $el.data();
             for (key in state) {
@@ -461,7 +479,11 @@
                 }
               }
             }
-            remixedComponent = _this[$el.attr('remix')](state, $el.attr('key'), el);
+            RemixClass = _this[$el.attr('remix')];
+            if (RemixClass == null) {
+              throw "Remixing child \"" + ($el.attr('remix')) + "\" does not exist";
+            }
+            remixedComponent = RemixClass(state, $el.attr('key'), el);
             if (!remixedComponent.constructor.noTemplate) {
               return $el.replaceWith(remixedComponent.node);
             }
@@ -470,30 +492,26 @@
         return this.node.find('[remix]').not(this.node.find('[remix] [remix]')).each(function() {
           return handleRemixNode(this);
         });
-
-        /*
-        			parseNode = (childNode) =>
-        				$(childNode).children().each (i, el) =>
-        					if $(el).is '[remix]'
-        						handleRemixNode(el)
-        					else
-        						 * TODO: performance hit, use nodeType detect?
-        						parseNode(el)
-        
-        			parseNode @node
-         */
       };
 
       Component.prototype._parseEvents = function() {
-        var eventStr, eventType, handleEvent, handler, selector, _ref, _ref1, _results;
+        var eventStr, eventType, handleEvent, handler, ref, refProp, selector, _ref, _ref1, _results;
         if (this.remixEvent && typeof this.remixEvent === 'object') {
           _ref = this.remixEvent;
           _results = [];
           for (eventStr in _ref) {
             handler = _ref[eventStr];
-            _ref1 = eventStr.split(','), eventType = _ref1[0], selector = _ref1[1];
+            _ref1 = eventStr.split(','), eventType = _ref1[0], selector = _ref1[1], refProp = _ref1[2];
             eventType = $.trim(eventType);
-            selector = $.trim(selector);
+            if (selector != null) {
+              if (refProp == null) {
+                refProp = $.trim(selector);
+                selector = null;
+              } else {
+                selector = $.trim(selector);
+                refProp = $.trim(refProp);
+              }
+            }
             handleEvent = (function(_this) {
               return function(handler) {
                 return function(e) {
@@ -503,10 +521,14 @@
                 };
               };
             })(this)(handler);
+            ref = refProp ? this.refs[refProp] : this.node;
+            if (ref == null) {
+              throw "Event's referencing node \"" + refProp + "\" does not exist";
+            }
             if (selector) {
-              _results.push(this.node.on(eventType, selector, handleEvent));
+              _results.push(ref.on(eventType, selector, handleEvent));
             } else {
-              _results.push(this.node.on(eventType, handleEvent));
+              _results.push(ref.on(eventType, handleEvent));
             }
           }
           return _results;

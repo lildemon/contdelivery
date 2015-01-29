@@ -106,22 +106,33 @@
 			loadedProjectMap[projPath] = LOADED
 			saveProjectPath(projPath)
 			updateRecentPaths()
-			project.getProjConfig(function() {
-				var url = 'http://' + project.id + '.local.tmued.com' + (listenPort == 80 ? '' : ':' + listenPort)
-				var virtualDirs = project.getConfig('dirs') || []
-				var urls = [url].concat(virtualDirs.map(function(dir) {
-					return url + '/' + dir.name
-				}))
-				var loadInst = LoadedItem({
-					path: projPath,
-					urls: urls,
-					unloadProject: function() {
-						projectLib.unloadProject(project.id)
-						delete loadedProjectMap[projPath]
-						loadInst.slideDestroy()
-					}
-				}, project.id)
-			})
+
+			var reloadConfig = function() {
+				project.getProjConfig(function() {
+					var url = 'http://' + project.id + '.local.tmued.com' + (listenPort == 80 ? '' : ':' + listenPort)
+					var virtualDirs = project.getConfig('dirs') || []
+					var urls = [url].concat(virtualDirs.map(function(dir) {
+						return url + '/' + dir.name
+					}))
+					var loadInst = LoadedItem({
+						path: projPath,
+						urls: urls,
+						unloadProject: function() {
+							projectLib.unloadProject(project.id)
+							delete loadedProjectMap[projPath]
+							loadInst.slideDestroy()
+						},
+						switchRoot: function(url) {
+							var part = url.split('/')
+							part = part[part.length - 1]
+							project.virtualRoot = part
+						},
+						reload: reloadConfig
+					}, project.id)
+				})
+			}
+			reloadConfig()
+			
 			
 		}
 

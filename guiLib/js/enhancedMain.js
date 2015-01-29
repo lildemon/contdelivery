@@ -21,27 +21,28 @@ LoadedItem = Remix.create({
   remixChild: {
     Button: Button
   },
-  template: "<div class=\"col-sm-6 col-md-4\" style=\"display: none\">\n	<div class=\"panel panel-primary\">\n		<div class=\"panel-heading\">\n			<button remix=\"Button\" data-type=\"danger\" data-size=\"xs\" data-onclick=\"@unloadProject\" data-title=\"X\" key=\"unloadBtn\"></button> &nbsp;&nbsp;<span ref=\"pathtxt\"></span>\n		</div>\n		<div class=\"panel-body\">\n			\n			<ul ref=\"urlList\">\n				\n			</ul>\n\n			<div class=\"alert alert-info alert-dismissible\" role=\"alert\" ref=\"alert\" style=\"display: none;\">\n			  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" ref=\"closeAlert\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">Close</span></button>\n			  <div ref=\"alertMsg\"></div>\n			</div>\n		</div>\n		<div class=\"panel-footer\">\n			<p class=\"text-right\">\n	  			<button remix=\"Button\" data-type=\"primary\" data-size=\"xs\" data-onclick=\"@configProject\" data-title=\"配置\" key=\"configBtn\"></button>\n	  			<button remix=\"Button\" data-type=\"info\" data-size=\"xs\" data-onclick=\"@openDirectory\" data-title=\"打开目录\" key=\"openDirBtn\"></button>\n	  			<button remix=\"Button\" data-type=\"danger\" data-size=\"xs\" data-onclick=\"@packProject\" data-title=\"打包\" key=\"packBtn\"></button>\n		  	</p>\n		</div>\n	</div>\n</div>",
+  template: "<div class=\"col-sm-6 col-md-4\" style=\"display: none\">\n	<div class=\"panel panel-primary\">\n		<div class=\"panel-heading\">\n			<button remix=\"Button\" data-type=\"danger\" data-size=\"xs\" data-onclick=\"@unloadProject\" data-title=\"X\" key=\"unloadBtn\"></button> &nbsp;&nbsp;<span ref=\"pathtxt\"></span>\n		</div>\n		<div class=\"panel-body\">\n			\n			<ul class=\"list-group\" ref=\"urlList\">\n				\n			</ul>\n\n			<div class=\"alert alert-info alert-dismissible\" role=\"alert\" ref=\"alert\" style=\"display: none;\">\n			  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" ref=\"closeAlert\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">Close</span></button>\n			  <div ref=\"alertMsg\"></div>\n			</div>\n		</div>\n		<div class=\"panel-footer\">\n			<p class=\"text-right\">\n	  			<button remix=\"Button\" data-type=\"primary\" data-size=\"xs\" data-onclick=\"@configProject\" data-title=\"配置\" key=\"configBtn\"></button>\n	  			<button remix=\"Button\" data-type=\"info\" data-size=\"xs\" data-onclick=\"@openDirectory\" data-title=\"打开目录\" key=\"openDirBtn\"></button>\n	  			<button remix=\"Button\" data-type=\"danger\" data-size=\"xs\" data-onclick=\"@packProject\" data-title=\"打包\" key=\"packBtn\"></button>\n		  	</p>\n		</div>\n	</div>\n</div>",
   remixEvent: {
-    'click, [ref="urlList"] li a': 'openLink',
-    'click, [ref="closeAlert"]': 'closeMsg'
+    'click, li a, urlList': 'openLink',
+    'change, li [type="radio"], urlList': 'switchRoot',
+    'click, closeAlert': 'closeMsg'
   },
   onNodeCreated: function() {
     return this.appendTo('#loaded-container');
   },
   render: function(data) {
-    this.pathtxt.text(data.path);
-    this.urlList.empty();
+    this.refs.pathtxt.text(data.path);
+    this.refs.urlList.empty();
     data.urls.forEach((function(_this) {
       return function(url) {
-        return _this.urlList.append("<li><a href=\"" + url + "\">" + url + "</a></li>");
+        return _this.refs.urlList.append("<li class=\"list-group-item\"><a href=\"" + url + "\">" + url + "</a><span style=\"float:right\"><input type=\"radio\" name=\"root\" data-url=\"" + url + "\"></span></li>");
       };
     })(this));
     this.unloadProject = data.unloadProject;
     return this.node.slideDown('fast');
   },
   closeMsg: function() {
-    return this.alert.slideUp();
+    return this.refs.alert.slideUp();
   },
   openLink: function(e) {
     var $this;
@@ -51,14 +52,17 @@ LoadedItem = Remix.create({
   },
   openDirectory: function() {
     var projPath;
-    projPath = this.pathtxt.text();
+    projPath = this.refs.pathtxt.text();
     return gui.Shell.showItemInFolder(projPath);
   },
   configProject: function() {
-    return configPage('mordenConfig.html?id=' + this.key);
+    return configPage(this.key);
+  },
+  switchRoot: function(e) {
+    return this.state.switchRoot($(e.target).data('url'));
   },
   packProject: function() {
-    return packProject(this.key, this.pathtxt.text(), this);
+    return packProject(this.key, this.refs.pathtxt.text(), this);
   },
   slideDestroy: function() {
     return this.node.slideUp('fast', (function(_this) {
@@ -69,12 +73,12 @@ LoadedItem = Remix.create({
   },
   openOutput: function() {
     var projPath;
-    projPath = path.join(this.pathtxt.text(), 'output');
+    projPath = path.join(this.refs.pathtxt.text(), 'output');
     return gui.Shell.showItemInFolder(projPath);
   },
   msg: function(msg) {
-    this.alertMsg.html(msg);
-    return this.alert.slideDown();
+    this.refs.alertMsg.html(msg);
+    return this.refs.alert.slideDown();
   }
 });
 
@@ -89,7 +93,7 @@ historyItem = Remix.create({
     return loadProject(this.key);
   },
   render: function() {
-    return this.projPath.text(this.key).attr('title', this.key);
+    return this.refs.projPath.text(this.key).attr('title', this.key);
   }
 });
 
@@ -116,22 +120,22 @@ loadHistory = Remix.create({
 reloadHistory = loadHistory;
 
 Dialog = Remix.create({
-  template: "<div class=\"modal\">\n	<div class=\"modal-backdrop fade in\"></div>\n  <div class=\"modal-dialog\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button type=\"button\" class=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\">&times;</span></button>\n        <h4 class=\"modal-title\" ref=\"title\">Modal title</h4>\n      </div>\n      <div class=\"modal-body\" ref=\"body\">\n        <p>Loading...</p>\n      </div>\n      <div class=\"modal-footer\" ref=\"footer\">\n      	\n      </div>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div>",
+  template: "<div class=\"modal\">\n	<div class=\"modal-backdrop fade in\"></div>\n  <div class=\"modal-dialog\">\n    <div class=\"modal-content\">\n      <div class=\"modal-header\">\n        <button type=\"button\" class=\"close\" aria-label=\"Close\"><span aria-hidden=\"true\" ref=\"closeButton\">&times;</span></button>\n        <h4 class=\"modal-title\" ref=\"title\">Modal title</h4>\n      </div>\n      <div class=\"modal-body\" ref=\"body\">\n        <p>Loading...</p>\n      </div>\n      <div class=\"modal-footer\" ref=\"footer\">\n      	\n      </div>\n    </div><!-- /.modal-content -->\n  </div><!-- /.modal-dialog -->\n</div>",
   remixEvent: {
-    'click, .close': 'slideAway'
+    'click, closeButton': 'slideAway'
   },
   onNodeCreated: function() {
     return this.appendTo(document.body);
   },
   render: function(data) {
-    this.title.text(data.title);
-    this.body.empty();
-    this.include(this.body, data.content);
+    this.refs.title.text(data.title);
+    this.refs.body.empty();
+    this.include(this.refs.body, data.content);
     if (data.buttons) {
-      this.include(this.footer, data.buttons);
-      this.footer.show();
+      this.include(this.refs.footer, data.buttons);
+      this.refs.footer.show();
     } else {
-      this.footer.hide();
+      this.refs.footer.hide();
     }
     return this.node.slideDown();
   },
@@ -152,15 +156,15 @@ choosePort = function(callback) {
     content: Remix.create({
       template: "<div class=\"input-group\">\n	<input type=\"text\" class=\"form-control\" ref=\"portNum\">\n	<div class=\"input-group-btn\">\n		<button type=\"button\" class=\"btn btn-primary\" tabindex=\"-1\" ref=\"okbtn\">确认</button>\n	</div>\n</div>",
       remixEvent: {
-        'keyup, [ref="portNum"]': 'updatePortNum',
-        'click, [ref="okbtn"]': 'savePort'
+        'keyup, portNum': 'updatePortNum',
+        'click, okbtn': 'savePort'
       },
       updatePortNum: function() {
         var val;
-        val = this.portNum.val();
+        val = this.refs.portNum.val();
         if (/[^\d]/.test(val)) {
           val = val.replace(/[^\d]/g, '');
-          this.portNum.val(val);
+          this.refs.portNum.val(val);
         }
         return portNum = val;
       },
@@ -183,11 +187,16 @@ configPage = Remix.create({
   onNodeCreated: function() {
     return this.appendTo(document.body);
   },
-  render: function(src) {
+  render: function(id) {
+    this.reloadid = id;
     $(document.body).css('overflow-y', 'hidden');
-    return this.frame.attr('src', src);
+    return this.refs.frame.attr('src', 'mordenConfig.html?id=' + id);
   },
   onDestroy: function() {
+    var _ref;
+    if ((_ref = LoadedItem.get(this.reloadid)) != null) {
+      _ref.state.reload();
+    }
     $(document.body).css('overflow-y', '');
     return global.console = window.console;
   }

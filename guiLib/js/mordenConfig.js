@@ -21,8 +21,8 @@ var SaveAll = function() {
 				'</p>'
 			].join('\n'),
 			remixEvent: {
-				'click, [ref="okbtn"]': 'save',
-				'click, [ref="cancelbtn"]': 'cancel' // ref 和对象方法不要重名
+				'click, okbtn': 'save',
+				'click, cancelbtn': 'cancel' // ref 和对象方法不要重名
 			},
 			onDestroy: function() {
 				top.configPage.get().destroy()
