@@ -56,6 +56,21 @@
 						</div>
 					</div>
 				</div>
+				<div class="col-sm-6 col-md-4">
+					<div class="panel panel-warning" id="globalSettings">
+						<div class="panel-heading"><span class="glyphicon glyphicon-wrench"> </span> &nbsp;全局设置</div>
+						<div class="panel-body">
+    						<p>
+    							<button type="button" class="btn btn-warning" tabindex="-1" ref="authorBtn">作者信息</button>
+
+    							<button type="button" class="btn btn-warning" tabindex="-1" ref="devButton">调试窗口</button>
+
+    							
+    						</p>
+
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -67,12 +82,13 @@
 		global.mainConsole = console
 
 		var projectLib = require('./projectLib')
+		var Project = require('../lib/Project')
 		var gui = require('nw.gui')
 		var child_process = require('child_process')
 		var path = require('path')
 		var fs = require('fs')
 		var loadedProjectMap = {}, LOADED = 1
-		var listenPort = 800
+		var listenPort = 80
 
 		function startSrv() {
 			projectLib.startServer(listenPort, function(e) {
@@ -85,6 +101,9 @@
 			})
 		}
 		startSrv()
+
+
+		
 		
 
 		$('#addProjectBtn').click(function() {
@@ -104,7 +123,7 @@
 			}
 			var project = projectLib.loadProject(projPath)
 			loadedProjectMap[projPath] = LOADED
-			saveProjectPath(projPath)
+			projectPaths.save(projPath)
 			updateRecentPaths()
 
 			var reloadConfig = function() {
@@ -167,16 +186,21 @@
 						jobArg.push('--fisfile')
 						jobArg.push(fisfile)
 					}
-					if(conf.fispack && conf.fispack.autoCombine) {
-						jobArg.push('--combine')
+
+					var argMap = {
+						"autoCombine" 	: 	"--combine",
+						"min"			:	"--min",
+						"autoReflow"	:	"--reflow",
+						"redir"			: 	"--redir",
+						"md5"			: 	"--md5"
 					}
 
-					if(conf.fispack && conf.fispack.min) {
-						jobArg.push('--min')
-					}
-
-					if(conf.fispack && conf.fispack.autoReflow) {
-						jobArg.push('--reflow')
+					if(conf.fispack) {
+						for(var confProp in argMap) {
+							if(conf.fispack[confProp]) {
+								jobArg.push(argMap[confProp])
+							}
+						}
 					}
 
 					var job = child_process.spawn(node, jobArg, {
@@ -208,6 +232,62 @@
 		}
 
 		loadHistory()
+
+
+		// GlobalSetting
+		Remix.create({
+			remixEvent: {
+				'click, devButton': 'openDev',
+				'click, authorBtn': 'openAuthor'
+			},
+			openDev: function() {
+				win = gui.Window.get()
+				win.showDevTools()
+			},
+			openAuthor: function() {
+				setAuthor()
+			}
+		}).bindNode(document.getElementById('globalSettings'))
+
+		var creatingPath = null
+
+		/* TODO:
+		gui.App.on 'open', (cmdline) ->
+		# handle open folder as project
+		# gui.App.argv, might be an array of folder on startup
+		*/
+
+		gui.App.on('open', function(cmdline) {
+			var args = cmdline.split(' ')
+			creatingPath = args[args.length - 1].split('"')[1]
+			userOpenDir(creatingPath)
+		})
+
+		if(gui.App.argv.length) {
+			if(gui.App.argv[0] && !!~gui.App.argv[0].indexOf('\\')) {
+				userOpenDir(gui.App.argv[0])
+			}
+		}
+
+		function userOpenDir(path) {
+			if(Project.isValid(path)) {
+				loadProject(path)
+			} else {
+				creatingPath = path
+				frameWindow({
+					src: 'createProject.html'
+				})
+			}
+		}
+
+		function getCreatingProjectPath() {
+			var p = creatingPath
+			creatingPath = null
+			return p
+		}
+
+
+	
 
 	</script>
 </body>

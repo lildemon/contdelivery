@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>创建项目</title>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<style>
+		.bootstrap-tagsinput { margin-bottom: 0; }
+		table thead th:nth-child(1) { min-width: 130px; }
+		.panel-warning>.panel-heading { position: fixed; width: 100%; z-index: 1000; top: 0; left: 0; }
+
+	</style>
+</head>
+<body>
+	<div class="panel panel-warning" id="container">
+		<div class="panel-heading">
+			<span class="pull-right"><button type="button" class="btn btn-danger btn-xs" id="closeWin" ref="close">X</button></span>
+			<span class="glyphicon glyphicon-wrench"> </span> &nbsp;配置 <span id="currentPath" ref="currentPath">path</span>
+		</div>
+		<div class="container" style="margin-top: 30px;">
+			<h3>选择项目脚手架</h3>
+			<div class="row">
+			  <div class="col-sm-6 col-md-4">
+			    <div class="panel panel-primary">
+				  <div class="panel-heading">
+				    <h3 class="panel-title">基础类型</h3>
+				  </div>
+				  <div class="panel-body text-center">
+				    SASS + SHTML 
+				    <p></p>
+				    <p><button type="button" class="btn btn-primary btnSave" ms-click="saveBtn" ref="chooseBasic">选择</button></p>
+				  </div>
+				</div>
+			  </div>
+			  <div class="col-sm-6 col-md-4">
+			    <div class="panel panel-primary">
+				  <div class="panel-heading">
+				    <h3 class="panel-title">测试</h3>
+				  </div>
+				  <div class="panel-body text-center">
+				    Webpack + SASS + SHTML 
+				    <p></p>
+				    <p><button type="button" class="btn btn-primary btnSave" ms-click="saveBtn" ref="chooseWebpack">选择</button></p>
+				  </div>
+				</div>
+			  </div>
+			</div>
+		</div>
+	</div>
+	<script src="js/jquery-1.9.1.min.js"></script>
+	<script src="js/Remix.js"></script>
+	<script src="js/utils.js"></script>
+	<script src="js/enhancedMain.js"></script>
+	<script src="js/createProject.js"></script>
+	
+</body>
+</html>

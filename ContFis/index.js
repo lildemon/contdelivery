@@ -5,7 +5,9 @@
 var fis = require('fis');
 var path = require('path');
 var argv = require('minimist')(process.argv.slice(2));
+var projectRoot = path.resolve(argv.root)
 
+require('fis-postpackager-authorinfo').setProject(projectRoot)
 //fis.cli.name = 'hello';
 //fis.cli.info = fis.util.readJSON(__dirname + '/package.json');
 
@@ -18,7 +20,7 @@ var config = {
 			coffee: 'coffee-script',
 			//md: 'marked'
 		},
-		postpackager: 'simple'
+		postpackager: ['simple', 'authorinfo']
 	},
 	roadmap: {
 		domain: {
@@ -76,8 +78,7 @@ var config = {
 	}
 }
 
-if(argv.combine) {
-	config.settings.postpackager.simple.autoCombine = true
+if(argv.redir) {
 	config.roadmap.path = [
 		{
 			// https://github.com/fex-team/fis-spriter-csssprites
@@ -92,11 +93,25 @@ if(argv.combine) {
 		useStandard: false
 	})
 }
+
+if(argv.combine) {
+	config.settings.postpackager.simple.autoCombine = true
+} 
+
 if(argv.reflow) {
 	config.settings.postpackager.simple.autoReflow = true
 }
 
 fis.config.merge(config)
+
+var wwwroot = path.resolve(argv.root)
+var customFisConfig = path.resolve(wwwroot, '../DEV-INF', 'fisCustom.json')
+try {
+	var customConfig = require(customFisConfig)
+	fis.config.merge(customConfig)
+} catch (e) {
+	
+}
 
 
 // 开启release --pack
@@ -104,7 +119,7 @@ var fisArgv = [
 	'node',
 	'fis',
 	'release',
-	'--root', path.resolve(argv.root),
+	'--root', projectRoot,
 	'--dest', path.resolve(argv.dest),
 	'--pack',
 	'--unique',
@@ -118,6 +133,10 @@ if(argv.min) {
 if(argv.fisfile) {
 	fisArgv.push('--file')
 	fisArgv.push(argv.fisfile)
+}
+
+if(argv.md5) {
+	fisArgv.push('--md5')
 }
 
 fis.cli.run(fisArgv)

@@ -1,5 +1,9 @@
+# coffee -bcw enhancedMain.coffee
+
 gui = require('nw.gui')
 path = require('path')
+
+
 
 Button = Remix.create
 	template: '<button type="button" class="btn"></button>'
@@ -50,6 +54,9 @@ LoadedItem = Remix.create
 	onNodeCreated: ->
 		@appendTo('#loaded-container')
 
+	initialRender: ->
+		#gui.Shell.openExternal(@state.urls[0]) if @state.urls[0]
+
 	render: (data) ->
 		@refs.pathtxt.text data.path
 		@refs.urlList.empty()
@@ -60,6 +67,7 @@ LoadedItem = Remix.create
 		# {@openDirectory, @unloadProject, @configProject, @packProject} = data
 		@unloadProject = data.unloadProject
 		@node.slideDown('fast')
+
 
 	closeMsg: ->
 		@refs.alert.slideUp()
@@ -121,9 +129,9 @@ loadHistory = Remix.create
 	onNodeCreated: ->
 		$('#historyContainer').empty().append(@node)
 	render: (data) -> # should data be a array
-		storedPaths = getProjectPaths()
+		storedPaths = projectPaths.get()
 		for history in storedPaths
-			@append @historyItem null, history
+			@append @historyItem null, history # history is the key
 reloadHistory = loadHistory
 
 
@@ -157,10 +165,10 @@ Dialog = Remix.create
 	render: (data) ->
 		@refs.title.text data.title
 		@refs.body.empty()
-		@include @refs.body, data.content
+		@include data.content, @refs.body
 
 		if data.buttons 
-			@include @refs.footer, data.buttons
+			@include data.buttons, @refs.footer
 			@refs.footer.show()
 		else @refs.footer.hide()
 
@@ -197,11 +205,63 @@ choosePort = (callback) ->
 			savePort: ->
 				if portNum.length
 					callback?(parseInt(portNum))
+					LoadedItem.getAll()?.forEach (l) ->
+						l.state.reload()
 					portDialog.slideAway()
 				else
 					alert "亲"
-				
-configPage = Remix.create
+
+setAuthor = ->
+	dialog = Dialog
+		title: '设置作者信息'
+		content: Remix.create
+			template: """
+				<form class="form-horizontal" role="form">
+				  <div class="form-group">
+				    <label for="author_name" class="col-sm-2 control-label">Name</label>
+				    <div class="col-sm-10">
+				      <input type="text" class="form-control" id="author_name" placeholder="英文ID，无空格" ref="name">
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label for="author_email" class="col-sm-2 control-label">Email</label>
+				    <div class="col-sm-10">
+				      <input type="email" class="form-control" id="author_email" placeholder="邮件地址" ref="email">
+				    </div>
+				  </div>
+				  <div class="form-group">
+				    <label for="author_email" class="col-sm-2 control-label">Url</label>
+				    <div class="col-sm-10">
+				      <input type="url" class="form-control" id="author_email" placeholder="作者主页" ref="url">
+				    </div>
+				  </div>
+				  
+				  <div class="form-group">
+				    <div class="col-sm-offset-2 col-sm-10">
+				      <button type="submit" class="btn btn-default">保存</button>
+				    </div>
+				  </div>
+				</form>
+			"""
+			remixEvent:
+				"submit": "onSubmit"
+			infoKeys: ['name', 'email', 'url']
+			render: ->
+				storedInfo = store('author')
+				if storedInfo
+					for inputName in @infoKeys
+						@refs[inputName].val(storedInfo[inputName])
+
+			onSubmit: (e) ->
+				#TODO: input Remix that validates itself as common validator
+				e.preventDefault()
+				info = {}
+				for inputName in @infoKeys
+					info[inputName] = @refs[inputName].val()
+				store('author', info)
+				dialog.slideAway()
+
+frameWindow = Remix.create
 	template: """
 		<div class="configPage">
 			<iframe ref="frame" src="" frameborder="0"></iframe>
@@ -209,11 +269,18 @@ configPage = Remix.create
 	"""
 	onNodeCreated: ->
 		@appendTo(document.body)
-	render: (id) ->
-		@reloadid = id
+	render: ->
 		$(document.body).css('overflow-y', 'hidden')
-		@refs.frame.attr('src', 'mordenConfig.html?id=' + id)
+		@refs.frame.attr('src', @state.src)
 	onDestroy: ->
-		LoadedItem.get(@reloadid)?.state.reload()
+		@state.onDestroy?()
 		$(document.body).css('overflow-y', '')
 		global.console = window.console
+
+configPage = (id) ->
+	frameWindow({
+		src: 'mordenConfig.html?id=' + id,
+		onDestroy: ->
+			LoadedItem.get(id)?.state.reload()
+	})
+

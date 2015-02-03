@@ -1,33 +1,42 @@
-var saveProjectPath = function(path) {
-	var paths = localStorage['paths']
-	if(!paths) {
-		paths = []
-	} else {
-		paths = JSON.parse(paths)
-	}
-
-	if(!!~paths.indexOf(path)) {
-		paths.splice(paths.indexOf(path), 1)
-	}
-
-	paths.unshift(path)
-	if(paths.length > 10) {
-		paths = paths.slice(0, 10)
-	}
-
-	localStorage['paths'] = JSON.stringify(paths)
-
+var store = function(key, obj) {
+  if(obj) {
+    localStorage[key] = JSON.stringify(obj)
+  } else {
+    return localStorage[key] && JSON.parse(localStorage[key])
+  }
 }
 
-var getProjectPaths = function() {
-	var paths = localStorage['paths']
-	if(!paths) {
-		paths = []
-	} else {
-		paths = JSON.parse(paths)
-	}
-	return paths
+var projectPaths = {
+  save: function(path) {
+    var paths = store('paths')
+    if(!paths) {
+      paths = []
+    } 
+
+    if(!!~paths.indexOf(path)) {
+      paths.splice(paths.indexOf(path), 1)
+    }
+
+    paths.unshift(path)
+    if(paths.length > 10) {
+      paths = paths.slice(0, 10)
+    }
+
+    store('paths', paths)
+  },
+  get: function() {
+    var paths = store('paths')
+    if(!paths) {
+      paths = []
+    } 
+    return paths
+  }
 }
+
+
+
+
+
 
 // Simple JavaScript Templating
 // John Resig - http://ejohn.org/ - MIT Licensed

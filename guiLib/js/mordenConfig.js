@@ -25,7 +25,7 @@ var SaveAll = function() {
 				'click, cancelbtn': 'cancel' // ref 和对象方法不要重名
 			},
 			onDestroy: function() {
-				top.configPage.get().destroy()
+				top.frameWindow.get().destroy()
 			},
 			save: function() {
 				for(var vm in vms) {
@@ -47,7 +47,7 @@ $('#closeWin').click(function() {
 	if(dirty) {
 		SaveAll()
 	} else {
-		top.configPage.get().destroy()
+		top.frameWindow.get().destroy()
 	}
 })
 
@@ -173,6 +173,8 @@ var vms = {
 		return $vm
 	})(),
 
+	// TODO: webpack alias etc..
+
 	"pack-dir": (function() {
 		var $vm = avalon.define({
 			$id: "pack-dir",
@@ -184,7 +186,7 @@ var vms = {
 				saveSingle($vm)
 			}
 		})
-		$vm.name = project.getConfig('webpack.packDirName')
+		$vm.name = project.getConfig('webpack.packDirName') || 'packed'
 		return $vm
 	})(),
 
@@ -246,7 +248,7 @@ var vms = {
 			},
 			save: function() {
 				var fisPack = {}
-				$vm.packs.$model.filter(function(pack) {
+				$vm.$model.packs.filter(function(pack) {
 					return !!pack.name
 				}).forEach(function(pack) {
 					fisPack[pack.name] = pack.contains
@@ -262,7 +264,6 @@ var vms = {
 					contains: packs[name],
 					name: name
 				})
-
 			}
 		}
 
