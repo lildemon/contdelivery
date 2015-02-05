@@ -7,7 +7,7 @@ var path = require('path');
 var argv = require('minimist')(process.argv.slice(2));
 var projectRoot = path.resolve(argv.root)
 
-require('fis-postpackager-authorinfo').setProject(projectRoot)
+//require('fis-postpackager-authorinfo').setProject(projectRoot)
 //fis.cli.name = 'hello';
 //fis.cli.info = fis.util.readJSON(__dirname + '/package.json');
 
@@ -20,7 +20,8 @@ var config = {
 			coffee: 'coffee-script',
 			//md: 'marked'
 		},
-		postpackager: ['simple', 'authorinfo']
+		spriter: 'csssprites',
+		postpackager: ['simple', 'relative', 'authorinfo']
 	},
 	roadmap: {
 		domain: {
@@ -63,8 +64,13 @@ var config = {
 			// https://github.com/fex-team/fis-spriter-csssprites
 			csssprites: {
 				margin: 20,
-				layout: 'matrix'
+				//layout: 'matrix'
 			}
+		},
+		optimizer: {
+			'png-compressor' : {
+                type : 'pngquant' //default is pngcrush
+            }
 		},
 		parser: {
 			sass: {
@@ -90,6 +96,7 @@ if(argv.redir) {
 	// 是否绝对化路径？ 如果否，那就不能重定位和内嵌，和依赖分析
 	config.roadmap.path.push({
 		reg: '**',
+		useSprite: true,
 		useStandard: false
 	})
 }
@@ -127,7 +134,11 @@ var fisArgv = [
 ]
 
 if(argv.min) {
-	fisArgv.push('-o')
+	fisArgv.push('--optimize')
+	if(argv.png) {
+		fis.config.set('modules.optimizer.js', '');
+		fis.config.set('modules.optimizer.css', '');
+	}
 }
 
 if(argv.fisfile) {

@@ -78,7 +78,7 @@ LoadedItem = Remix.create({
     return gui.Shell.showItemInFolder(projPath);
   },
   msg: function(msg) {
-    this.refs.alertMsg.html(msg);
+    this.refs.alertMsg.text(msg);
     return this.refs.alert.slideDown();
   }
 });

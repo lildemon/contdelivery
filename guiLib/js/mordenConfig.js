@@ -191,11 +191,14 @@ var vms = {
 	})(),
 
 	"redir": (function() {
-		var props = ['redir', 'min', 'autoReflow', 'autoCombine', 'md5']
+		var props = ['redir', 'min', 'png', 'mincss', 'minjs', 'autoReflow', 'autoCombine', 'md5']
 		var $vm = avalon.define({
 			$id: "redir",
 			redir: false,
 			min: false,
+			png: false,
+			mincss: false,
+			minjs: false,
 			autoReflow: false,
 			autoCombine: false,
 			md5: false,

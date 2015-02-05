@@ -166,7 +166,7 @@
 			
 			var confis = path.join(path.dirname(process.execPath), 'ContFis')
 			var node = path.join(confis, 'node.exe')
-			inst.msg('<strong>正在打包</strong>')
+			inst.msg('正在打包')
 
 			project.getProjConfig(function(conf) {
 				if(conf.webpack.entry) {
@@ -190,6 +190,9 @@
 					var argMap = {
 						"autoCombine" 	: 	"--combine",
 						"min"			:	"--min",
+						"png"			: 	"--png",
+						"mincss"		: 	"--mincss",
+						"minjs"			: 	"--minjs",
 						"autoReflow"	:	"--reflow",
 						"redir"			: 	"--redir",
 						"md5"			: 	"--md5"

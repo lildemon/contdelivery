@@ -101,7 +101,7 @@ LoadedItem = Remix.create
 		gui.Shell.showItemInFolder(projPath)
 
 	msg: (msg) ->
-		@refs.alertMsg.html(msg)
+		@refs.alertMsg.text(msg)
 		@refs.alert.slideDown()
 
 
