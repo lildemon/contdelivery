@@ -178,7 +178,7 @@
 					var jobArg = [
 						'index.js',
 						'--root', path.join(projPath, 'wwwroot'), // use Project.wwwroot
-						'--dest', path.join(projPath, 'output')
+						'--dest', path.join(projPath, 'dist')
 					]
 
 					var fisfile = path.join(projPath, 'fis-config.js')
@@ -195,6 +195,7 @@
 						"minjs"			: 	"--minjs",
 						"autoReflow"	:	"--reflow",
 						"redir"			: 	"--redir",
+						"relative"		: 	"--relative",
 						"md5"			: 	"--md5"
 					}
 

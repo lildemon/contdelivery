@@ -10,3 +10,8 @@ var gui = require('nw.gui');
         will emitter when reopen
 
 每个项目的package.json都要有一个唯一的名字，英文，如果只打算用一个端口的话  用来做虚拟目录的分隔符
+
+coffee -bcw *.coffee
+
+file: fis-kernel/lib/release
+make map creation falsy

@@ -74,7 +74,7 @@ LoadedItem = Remix.create({
   },
   openOutput: function() {
     var projPath;
-    projPath = path.join(this.refs.pathtxt.text(), 'output');
+    projPath = path.join(this.refs.pathtxt.text(), 'dist');
     return gui.Shell.showItemInFolder(projPath);
   },
   msg: function(msg) {

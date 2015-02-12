@@ -21,7 +21,12 @@ var config = {
 			//md: 'marked'
 		},
 		spriter: 'csssprites',
-		postpackager: ['simple', 'relative', 'authorinfo']
+		postpackager: ['simple', 'authorinfo'],
+		optimizer: {
+			js: argv.minjs ? 'uglify-js' : '',
+			css: argv.mincss ? 'clean-css': '',
+			png: argv.png ? 'png-compressor': ''
+		}
 	},
 	roadmap: {
 		domain: {
@@ -38,7 +43,7 @@ var config = {
 		path: [
 			{
 				// https://github.com/fex-team/fis-spriter-csssprites
-				reg: '**.css',
+				reg: '**',
 				useSprite: true,
 				useStandard: false
 			}
@@ -88,10 +93,14 @@ if(argv.redir) {
 	config.roadmap.path = [
 		{
 			// https://github.com/fex-team/fis-spriter-csssprites
-			reg: '**.css',
+			// /(.*\.(?:css|scss))/i
+			reg: '**',
 			useSprite: true
 		}
 	]
+	if(argv.relative) {
+		config.modules.postpackager.push('relative')
+	}
 } else {
 	// 是否绝对化路径？ 如果否，那就不能重定位和内嵌，和依赖分析
 	config.roadmap.path.push({
@@ -129,17 +138,10 @@ var fisArgv = [
 	'--root', projectRoot,
 	'--dest', path.resolve(argv.dest),
 	'--pack',
+	'--optimize',
 	'--unique',
 	'--domains'
 ]
-
-if(argv.min) {
-	fisArgv.push('--optimize')
-	if(argv.png) {
-		fis.config.set('modules.optimizer.js', '');
-		fis.config.set('modules.optimizer.css', '');
-	}
-}
 
 if(argv.fisfile) {
 	fisArgv.push('--file')

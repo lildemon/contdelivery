@@ -97,7 +97,7 @@ LoadedItem = Remix.create
 			@destroy()
 
 	openOutput: ->
-		projPath = path.join(@refs.pathtxt.text(), 'output')
+		projPath = path.join(@refs.pathtxt.text(), 'dist')
 		gui.Shell.showItemInFolder(projPath)
 
 	msg: (msg) ->
