@@ -64,6 +64,7 @@ exports.loadProject = function(projPath) {
 	}
 	matcher.installedProject[id] = project
 	project.id = id
+	matcher.setDefault(id)
 	return project
 }
 
