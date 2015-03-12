@@ -79,7 +79,7 @@
 				<tbody>
 					
 					<tr ms-controller="redir">
-						<td>资源重定向<input type="checkbox" ms-duplex-checked="redir"> </td>
+						<td>资源重定向</td>
 						<td>
 							<!-- <div class="checkbox">
 								<label>
@@ -104,7 +104,12 @@
 							</div>
 
 							<p><strong>开启资源重定向后支持<em>base64图片内嵌</em> <em>合并js</em> <em>合并css</em> <em>定义域名前缀</em></strong></p>
-							<p>资源重定向选项： <em>注：相对路径会转化为绝对路径</em></p>
+							<div class="checkbox">
+								<label>
+									<input type="checkbox" ms-duplex-checked="redir"> 
+									开启资源重定向
+								</label>
+							</div>
 							<div class="checkbox">
 								<label>
 									<input type="checkbox" ms-duplex-checked="autoReflow"> 开启Reflow（css移到head，js移到body尾部）
@@ -117,7 +122,7 @@
 							</div>
 							<div class="checkbox">
 								<label>
-									<input type="checkbox" ms-duplex-checked="relative"> 绝对路径转换相对
+									<input type="checkbox" ms-duplex-checked="absolute"> 转绝对路径
 								</label>
 							</div>
 							<!-- <div class="checkbox">

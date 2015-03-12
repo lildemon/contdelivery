@@ -89,7 +89,7 @@ var config = {
 	}
 }
 
-if(argv.redir) {
+if(argv.redir || argv.absolute) { 
 	config.roadmap.path = [
 		{
 			// https://github.com/fex-team/fis-spriter-csssprites
@@ -98,7 +98,7 @@ if(argv.redir) {
 			useSprite: true
 		}
 	]
-	if(argv.relative) {
+	if(!argv.absolute) {
 		config.modules.postpackager.push('relative')
 	}
 } else {

@@ -191,7 +191,7 @@ var vms = {
 	})(),
 
 	"redir": (function() {
-		var props = ['redir', 'min', 'png', 'mincss', 'relative', 'minjs', 'autoReflow', 'autoCombine', 'md5']
+		var props = ['redir', 'min', 'png', 'mincss', 'minjs', 'autoReflow', 'autoCombine', 'absolute', 'md5']
 		var $vm = avalon.define({
 			$id: "redir",
 			redir: false,
@@ -201,8 +201,8 @@ var vms = {
 			minjs: false,
 			autoReflow: false,
 			autoCombine: false,
-			relative: false,
 			md5: false,
+			absolute: false,
 			saveBtn: function() {
 				saveSingle($vm)
 			},
@@ -213,7 +213,8 @@ var vms = {
 			}
 		})
 
-		;['autoReflow', 'autoCombine', 'md5'].forEach(function(prop) {
+
+		;['autoReflow', 'autoCombine', 'md5', 'absolute'].forEach(function(prop) {
 			$vm.$watch(prop, function(checked) {
 				if(checked) {
 					$vm.redir = true
