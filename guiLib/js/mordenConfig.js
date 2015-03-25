@@ -191,7 +191,7 @@ var vms = {
 	})(),
 
 	"redir": (function() {
-		var props = ['redir', 'min', 'png', 'mincss', 'minjs', 'autoReflow', 'autoCombine', 'absolute', 'md5']
+		var props = ['redir', 'min', 'png', 'mincss', 'minjs', 'autoReflow', 'autoCombine', 'absolute', 'md5', 'gbk']
 		var $vm = avalon.define({
 			$id: "redir",
 			redir: false,
@@ -203,6 +203,7 @@ var vms = {
 			autoCombine: false,
 			md5: false,
 			absolute: false,
+			gbk: false,
 			saveBtn: function() {
 				saveSingle($vm)
 			},
@@ -210,11 +211,14 @@ var vms = {
 				props.forEach(function(prop) {
 					project.setConfig('fispack.' + prop, $vm.$model[prop])
 				})
+				// 开启fis的md5同时开启webpack的bundle的hash
+				project.setConfig('webpack.hash', $vm.$model.md5)
 			}
 		})
 
 
 		;['autoReflow', 'autoCombine', 'md5', 'absolute'].forEach(function(prop) {
+			// md5 support need useStandard to redir src=""
 			$vm.$watch(prop, function(checked) {
 				if(checked) {
 					$vm.redir = true

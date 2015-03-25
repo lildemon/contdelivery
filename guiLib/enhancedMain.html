@@ -196,7 +196,8 @@
 						"autoReflow"	:	"--reflow",
 						"redir"			: 	"--redir",
 						"absolute"		: 	"--absolute",
-						"md5"			: 	"--md5"
+						"md5"			: 	"--md5",
+						"gbk"			: 	"--gbk"
 					}
 
 					if(conf.fispack) {
@@ -206,6 +207,10 @@
 							}
 						}
 					}
+
+					// 如果有开启md5，那么packpath下不应该转换md5，用query代替，并开启webpack的bundle的hash
+					jobArg.push('--packpath')
+					jobArg.push(conf.packDirName || 'packed')
 
 					var job = child_process.spawn(node, jobArg, {
 						cwd: confis

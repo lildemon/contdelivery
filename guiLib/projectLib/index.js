@@ -77,6 +77,6 @@ exports.unloadProject = function(id) {
 }
 
 exports.saveWpConfig = function(project, wpconf) {
-	project.projectConfig.webpack.test = wpconf
+	//project.projectConfig.webpack.test = wpconf
 	project.saveProjConfig()
 }

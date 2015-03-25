@@ -89,6 +89,10 @@ var config = {
 	}
 }
 
+if(argv.gbk) {
+	config.project.charset = 'gbk'
+}
+
 if(argv.redir || argv.absolute) { 
 	config.roadmap.path = [
 		{
@@ -103,11 +107,7 @@ if(argv.redir || argv.absolute) {
 	}
 } else {
 	// 是否绝对化路径？ 如果否，那就不能重定位和内嵌，和依赖分析
-	config.roadmap.path.push({
-		reg: '**',
-		useSprite: true,
-		useStandard: false
-	})
+	
 }
 
 if(argv.combine) {
@@ -117,18 +117,6 @@ if(argv.combine) {
 if(argv.reflow) {
 	config.settings.postpackager.simple.autoReflow = true
 }
-
-fis.config.merge(config)
-
-var wwwroot = path.resolve(argv.root)
-var customFisConfig = path.resolve(wwwroot, '../DEV-INF', 'fisCustom.json')
-try {
-	var customConfig = require(customFisConfig)
-	fis.config.merge(customConfig)
-} catch (e) {
-	
-}
-
 
 // 开启release --pack
 var fisArgv = [
@@ -150,7 +138,28 @@ if(argv.fisfile) {
 
 if(argv.md5) {
 	fisArgv.push('--md5')
+	if(argv.packpath) {
+		config.roadmap.path.unshift({
+			reg: '/' + argv.packpath + '/**',
+			useHash: false,
+			query: '?t=' + (new Date()).valueOf()
+		})
+	}
 }
+
+
+fis.config.merge(config)
+
+
+var wwwroot = path.resolve(argv.root)
+var customFisConfig = path.resolve(wwwroot, '../DEV-INF', 'fisCustom.json')
+try {
+	var customConfig = require(customFisConfig)
+	fis.config.merge(customConfig)
+} catch (e) {
+	
+}
+
 
 fis.cli.run(fisArgv)
 
