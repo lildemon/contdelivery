@@ -9,9 +9,16 @@ Button = Remix.create
 	template: '<button type="button" class="btn"></button>'
 	remixEvent:
 		'click': 'clickCallback'
+	onNodeCreated: (oldNode) ->
+		# old node pass in onNodeCreated callback
+		# just like "transclude"
+		@node.append(oldNode.children())
+
 	render: (data) ->
 		@node.attr 'class', "btn btn-#{data.type} btn-#{data.size}"
-		@node.text data.title
+		if data.title
+			@node.text data.title
+
 		@clickCallback = data.onclick
 
 LoadedItem = Remix.create
@@ -37,7 +44,7 @@ LoadedItem = Remix.create
 				</div>
 				<div class="panel-footer">
 					<p class="text-right">
-						<button remix="Button" data-type="primary" data-size="xs" data-onclick="@configProject" key="reloadBtn"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+						<button remix="Button" data-type="danger" data-size="xs" data-onclick="@reloadProject" key="reloadBtn"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
 			  			<button remix="Button" data-type="primary" data-size="xs" data-onclick="@configProject" data-title="配置" key="configBtn"></button>
 			  			<button remix="Button" data-type="info" data-size="xs" data-onclick="@openDirectory" data-title="打开目录" key="openDirBtn"></button>
 			  			<button remix="Button" data-type="danger" data-size="xs" data-onclick="@packProject" data-title="打包" key="packBtn"></button>
@@ -67,6 +74,7 @@ LoadedItem = Remix.create
 			"""
 		# {@openDirectory, @unloadProject, @configProject, @packProject} = data
 		@unloadProject = data.unloadProject
+		@reloadProject = data.reloadProject
 		@node.slideDown('fast')
 
 

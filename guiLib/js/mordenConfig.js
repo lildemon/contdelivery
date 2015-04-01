@@ -153,6 +153,8 @@ var vms = {
 					}
 				})
 				project.setConfig('webpack.entry', wpEntry)
+
+				// 保存作为Common模块的模块名
 				project.setConfig('webpack.common', commonName)
 			}
 		})
@@ -326,6 +328,20 @@ var vms = {
 		})
 
 		$vm.domain = project.getConfig('fispack.domain.global')
+
+		return $vm
+	})(),
+
+	"experimental": (function() {
+		var $vm = avalon.define({
+			$id: "experimental",
+			"es6": false,
+			save: function() {
+				project.setConfig('webpack.es6', $vm.$model.es6)
+			}
+		})
+
+		$vm.es6 = project.getConfig('webpack.es6')
 
 		return $vm
 	})(),

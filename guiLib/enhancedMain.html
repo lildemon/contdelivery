@@ -141,6 +141,10 @@
 							delete loadedProjectMap[projPath]
 							loadInst.slideDestroy()
 						},
+						reloadProject: function() {
+							console.clear()
+							project.updateMiddleware()
+						},
 						switchRoot: function(url) {
 							var part = url.split('/')
 							part = part[part.length - 1]

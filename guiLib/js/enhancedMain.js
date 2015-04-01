@@ -10,9 +10,14 @@ Button = Remix.create({
   remixEvent: {
     'click': 'clickCallback'
   },
+  onNodeCreated: function(oldNode) {
+    return this.node.append(oldNode.children());
+  },
   render: function(data) {
     this.node.attr('class', "btn btn-" + data.type + " btn-" + data.size);
-    this.node.text(data.title);
+    if (data.title) {
+      this.node.text(data.title);
+    }
     return this.clickCallback = data.onclick;
   }
 });
@@ -21,7 +26,7 @@ LoadedItem = Remix.create({
   remixChild: {
     Button: Button
   },
-  template: "<div class=\"col-sm-6 col-md-4\" style=\"display: none\">\n	<div class=\"panel panel-primary\">\n		<div class=\"panel-heading\">\n			<button remix=\"Button\" data-type=\"danger\" data-size=\"xs\" data-onclick=\"@unloadProject\" data-title=\"X\" key=\"unloadBtn\"></button> &nbsp;&nbsp;<span ref=\"pathtxt\"></span>\n		</div>\n		<div class=\"panel-body\">\n			\n			<ul class=\"list-group\" ref=\"urlList\">\n				\n			</ul>\n\n			<div class=\"alert alert-info alert-dismissible\" role=\"alert\" ref=\"alert\" style=\"display: none;\">\n			  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" ref=\"closeAlert\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">Close</span></button>\n			  <div ref=\"alertMsg\"></div>\n			</div>\n		</div>\n		<div class=\"panel-footer\">\n			<p class=\"text-right\">\n				<button remix=\"Button\" data-type=\"primary\" data-size=\"xs\" data-onclick=\"@configProject\" key=\"reloadBtn\"><span class=\"glyphicon glyphicon-refresh\" aria-hidden=\"true\"></span></button>\n	  			<button remix=\"Button\" data-type=\"primary\" data-size=\"xs\" data-onclick=\"@configProject\" data-title=\"配置\" key=\"configBtn\"></button>\n	  			<button remix=\"Button\" data-type=\"info\" data-size=\"xs\" data-onclick=\"@openDirectory\" data-title=\"打开目录\" key=\"openDirBtn\"></button>\n	  			<button remix=\"Button\" data-type=\"danger\" data-size=\"xs\" data-onclick=\"@packProject\" data-title=\"打包\" key=\"packBtn\"></button>\n		  	</p>\n		</div>\n	</div>\n</div>",
+  template: "<div class=\"col-sm-6 col-md-4\" style=\"display: none\">\n	<div class=\"panel panel-primary\">\n		<div class=\"panel-heading\">\n			<button remix=\"Button\" data-type=\"danger\" data-size=\"xs\" data-onclick=\"@unloadProject\" data-title=\"X\" key=\"unloadBtn\"></button> &nbsp;&nbsp;<span ref=\"pathtxt\"></span>\n		</div>\n		<div class=\"panel-body\">\n			\n			<ul class=\"list-group\" ref=\"urlList\">\n				\n			</ul>\n\n			<div class=\"alert alert-info alert-dismissible\" role=\"alert\" ref=\"alert\" style=\"display: none;\">\n			  <button type=\"button\" class=\"close\" data-dismiss=\"alert\" ref=\"closeAlert\"><span aria-hidden=\"true\">&times;</span><span class=\"sr-only\">Close</span></button>\n			  <div ref=\"alertMsg\"></div>\n			</div>\n		</div>\n		<div class=\"panel-footer\">\n			<p class=\"text-right\">\n				<button remix=\"Button\" data-type=\"danger\" data-size=\"xs\" data-onclick=\"@reloadProject\" key=\"reloadBtn\"><span class=\"glyphicon glyphicon-refresh\" aria-hidden=\"true\"></span></button>\n	  			<button remix=\"Button\" data-type=\"primary\" data-size=\"xs\" data-onclick=\"@configProject\" data-title=\"配置\" key=\"configBtn\"></button>\n	  			<button remix=\"Button\" data-type=\"info\" data-size=\"xs\" data-onclick=\"@openDirectory\" data-title=\"打开目录\" key=\"openDirBtn\"></button>\n	  			<button remix=\"Button\" data-type=\"danger\" data-size=\"xs\" data-onclick=\"@packProject\" data-title=\"打包\" key=\"packBtn\"></button>\n		  	</p>\n		</div>\n	</div>\n</div>",
   remixEvent: {
     'click, li a, urlList': 'openLink',
     'change, li [type="radio"], urlList': 'switchRoot',
@@ -40,6 +45,7 @@ LoadedItem = Remix.create({
       };
     })(this));
     this.unloadProject = data.unloadProject;
+    this.reloadProject = data.reloadProject;
     return this.node.slideDown('fast');
   },
   closeMsg: function() {
