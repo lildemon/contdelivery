@@ -31,10 +31,12 @@ var SaveAll = function() {
 				for(var vm in vms) {
 					vms[vm].save()
 				}
+				
 				project.saveProjConfig(function() {
 					project.updateMiddleware()
+					d.destroy()
 				})
-				d.destroy()
+				
 			},
 			cancel: function() {
 				d.destroy()
@@ -335,13 +337,14 @@ var vms = {
 	"experimental": (function() {
 		var $vm = avalon.define({
 			$id: "experimental",
-			"es6": false,
+			"esSix": false,
 			save: function() {
-				project.setConfig('webpack.es6', $vm.$model.es6)
+				// is there a bug on setting undefined value?
+				project.setConfig('webpack.es6', $vm.$model.esSix)
 			}
 		})
 
-		$vm.es6 = project.getConfig('webpack.es6')
+		$vm.es6 = project.getConfig('webpack.es6') || false
 
 		return $vm
 	})(),

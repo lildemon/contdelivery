@@ -53,6 +53,7 @@ var config = {
 	// 同上，去掉_xxx.shtml
 	project: {
 		exclude: ['**/_*.scss', '**/_*.shtml']
+		// TODO: exclude node_modules/*
 	},
 	settings: {
 		postpackager: {
@@ -140,6 +141,8 @@ if(argv.md5) {
 	fisArgv.push('--md5')
 	if(argv.packpath) {
 		config.roadmap.path.unshift({
+			// TODO: 用webpack的自定义文件名hash功能而不是query，用query如果部署在cdn下会产生资源覆盖问题
+			// 同名文件被覆盖后，旧页面访问，样式、功能错误，或者没被覆盖，新页面访问也会如此
 			reg: '/' + argv.packpath + '/**',
 			useHash: false,
 			query: '?t=' + (new Date()).valueOf()

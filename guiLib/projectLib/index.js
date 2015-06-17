@@ -24,7 +24,7 @@ exports.startServer = function(port, callback) {
 			io.sockets.on("connection", function(socket) {
 				socket.emit("ok")
 			})
-
+			// Create sockets for webpack here, in order to use the port specified here
 			require('../../lib/Watcher').sockets = io.sockets
 			callback()
 		} else {
