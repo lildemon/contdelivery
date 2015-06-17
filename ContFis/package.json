@@ -7,8 +7,12 @@
     "fis": "^1.8.13",
     "fis-parser-coffee-script": "0.0.2",
     "fis-parser-marked": "0.0.5",
-    "fis-parser-sass": "^0.2.3",
+    "fis-parser-nodesass": "git+https://git.coding.net/ronhng/startpoint-fis-parser-nodesass.git",
+    "fis-parser-ssi": "git+https://git.coding.net/ronhng/startpoint-fis-parser-ssi.git",
     "fis-postpackager-simple": "0.0.23",
+    "fis-postpackager-relative": "git+https://git.coding.net/ronhng/fis-postpackager-relative.git",
+    "fis-postpackager-authorinfo":"git+https://git.coding.net/ronhng/fis-postpackager-authorinfo.git",
+    "fis-postpackager-relative":"git+https://git.coding.net/ronhng/fis-postpackager-relative.git",
     "minimist": "^1.1.0"
   },
   "devDependencies": {},

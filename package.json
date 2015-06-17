@@ -18,7 +18,7 @@
     "babel-core": "^4.7.16",
     "babel-loader": "^4.2.0",
     "babel-runtime": "^4.7.16",
-    "bundle-loader": "^0.5.3",
+    "bundle-loader": "0.5.2",
     "coffee-jsx-loader": "^0.1.0",
     "coffee-loader": "^0.7.2",
     "coffee-react": "^2.1.2",
@@ -47,7 +47,9 @@
     "watchpack": "lildemon/watchpack",
     "webpack": "^1.9.7",
     "webpack-dev-server": "^1.6.6",
-    "wrench": "^1.5.8"
+    "wrench": "^1.5.8",
+    "node-sass": "git+https://git.coding.net/ronhng/startpoint-node-sass.git",
+    "ssi": "git+https://git.coding.net/ronhng/startpoint-ssi.git"
   },
   "node-remote": "www.tmued.com",
   "devDependencies": {}
